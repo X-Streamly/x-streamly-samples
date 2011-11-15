@@ -1,0 +1,151 @@
+<html>
+	<head>
+		<script type="text/javascript" src="http://x-stream.ly/xstreamlyClient.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+		<script>
+			$(window).load(function() {
+
+				var xstreamly = new XStreamly('playground', '08c35265-585c-45e7-b99b-a42cd8691d12');
+				var streamName = 'ballexample'+Math.round(Math.random()*1000000);
+				var channel = xstreamly.subscribe(streamName, { includeMyMessages: true });
+				xstreamly.connection.bind(undefined,function(eventName,data){
+           			$("#demo-fast-stats").html('Connection status: '+eventName+'<br/><br/><br/><br/>');
+        		});
+        		
+        		$('#demo-fast-stats').html('Connection status: '+xstreamly.connection.state+'<br/><br/><br/><br/>');
+        
+				var mouseInBox=false;
+				var totalPackets =0;
+				var fastStreamName = 'fast';
+				var lastMessages = [];
+				var widthOffest = $("#demo-fast-drag-echo").width()/2;
+				var heightOffest = $("#demo-fast-drag-echo").height()/2;
+				
+				channel.bind(fastStreamName, function(data) {
+				    $("#demo-fast-drag-echo").css({
+				     "left": (data.left-widthOffest) + "px", 
+				     "top": (data.top- heightOffest) + "px" });
+				    $("#demo-fast-drag-echo").show();
+				    var latency = new Date().getTime()-data.time;
+				    totalPackets++;
+				    while(lastMessages.length>0 && lastMessages[0]+1000<data.time){
+				        lastMessages.pop();
+				    }
+				    lastMessages.push(data.time);
+				    
+				    if(mouseInBox){
+				        $("#demo-fast-stats").html(
+				        "Dragging stats:<br/>"+
+				        "Latency: "+latency+"ms<br/>"+
+				        "Total # of messages: "+totalPackets+"<br/>"+
+				        "Messages in last second: "+lastMessages.length+"<br/>");
+				    }
+				});
+				
+				var maxX = $("#demo-fast-drag-generator").width()-widthOffest;
+				var maxY = $("#demo-fast-drag-generator").height()-heightOffest;
+				$("#demo-fast-drag-generator").mousemove(function(event) {
+				    var el =null;
+				    if(event.srcElement){
+				        //crome
+				        el=event.srcElement;
+				    }
+				    else{
+				        el=event.currentTarget;
+				    }
+				    
+				    if(el.id === "demo-fast-drag-generator"){
+				        var left = event.pageX - $("#demo-fast-drag-generator").offset().left;
+				        var top= event.pageY - $("#demo-fast-drag-generator").offset().top;
+				        
+				        channel.trigger(fastStreamName, { 
+				                left: Math.max(Math.min(left,maxX),widthOffest), 
+				                top: Math.max(Math.min(top,maxY),heightOffest),
+				                time: new Date().getTime()
+				        });
+
+				    }
+				});
+				
+				$("#demo-fast-drag-generator").mouseleave(function(event) {
+				    $('#demo-fast-stats').html('Connection status: '+xstreamly.connection.state+'<br/><br/><br/><br/>');
+				    mouseInBox = false;
+				});
+				
+				$("#demo-fast-drag-generator").mouseenter(function(event) {
+				    mouseInBox = true;
+				});
+			});
+		</script>
+		<style type="text/css">
+			.demo-fast-container{
+				float: left;
+			}
+
+			.demo-fast-box {
+	
+				width: 300px;
+				height: 300px;
+				margin: 20px;
+				border: 2px solid black;
+				-moz-border-radius: 5px;
+				-webkit-border-radius: 5px;
+				border-radius: 5px;
+				background: #ccc;
+				z-index:0;
+				/* older IEs*/
+				filter: alpha(opacity=90);
+				/* Older than Firefox 0.9 */
+				-moz-opacity:0.9;
+				/* Safari 1.x (pre WebKit!) */
+				-khtml-opacity: 0.9;
+				/* Modern!
+				/* Firefox 0.9+, Safari 2?, Chrome any?
+				/* Opera 9+, IE 9+ */
+				opacity: 0.9;
+			}
+
+			.demo-fast-header
+			{
+				margin: 20px;
+			}
+
+			.demo-fast-circle {
+				position: relative;
+				top: 150px;
+				left: 150px;
+				height: 20px;
+				width: 20px;
+				-moz-border-radius: 25px;
+				-webkit-border-radius: 25px;
+				border-radius:25px;
+				z-index:-1;
+				border: 2px solid #333;
+				background: #00FF00;
+			}
+
+			#demo-fast-stats {
+				clear:left;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="demo-fast-container">
+            <p class="demo-fast-header">Move mouse in this box:</p>
+            <div id="demo-fast-drag-generator" class="demo-fast-box"></div>
+        </div>
+        <div class="demo-fast-container">
+         <p class="demo-fast-header">Watch ball follow in this box:</p>
+            <div class="demo-fast-box">
+                <div id="demo-fast-drag-echo" class="demo-fast-circle"></div>
+            </div>
+        </div>
+        <p id="demo-fast-stats">
+            Connection status: loading
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+        </p>
+	</body>
+</html>
