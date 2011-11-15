@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<script type="text/javascript" src="http://x-stream.ly/xstreamlyClient.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+		<script>
+			$(window).load(function() {
+				var toys = ["robot", "pony", "rocket", "flux-capacitor", "airplane"];
+				var xstreamly = new XStreamly('playground', '08c35265-585c-45e7-b99b-a42cd8691d12');
+		    	//this is just so every user gets a diffrent stream
+		    	var streamName = 'sample'+Math.round(Math.random()*1000000);
+		    	var channel = xstreamly.subscribe(streamName, { includeMyMessages: true });
+
+		    	channel.bind('easy', function(data) {
+		        	$("#toys").append('<li>'+data+'</li>');
+		    	});
+		    	        	
+				$("#demo-send-toy").click(function() {
+					channel.trigger('easy', toys[Math.floor(Math.random() * toys.length)]);
+					return false; // don't handle click further
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<input type="button" id="demo-send-toy" value="Send Toy"/>
+		<br/>
+		Toys:
+		<ul id="toys">
+		</ul>
+	</body>
+</html>
