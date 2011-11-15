@@ -3,28 +3,90 @@
 		<title>
 			X-Stream.ly Samples
 		</title>
+		<style>
+			.data-table {
+				border: solid #ccc 1px;
+				-moz-border-radius: 6px;
+				-webkit-border-radius: 6px;
+				border-radius: 6px;
+				-webkit-box-shadow: 0 1px 1px #ccc; 
+				-moz-box-shadow: 0 1px 1px #ccc; 
+				box-shadow: 0 1px 1px #ccc;         
+			}
+		
+			.data-table td, .data-table th {
+				border-left: 1px solid #ccc;
+				border-top: 1px solid #ccc;
+				padding: 10px;
+				text-align: left;    
+			}
+
+			.data-table th {
+		
+				background-color: #e0dcef;
+				background-image: -webkit-gradient(linear, left top, left bottom, from(#f0ecff), to(#e0dcef));
+				background-image: -webkit-linear-gradient(top, #f0ecff, #e0dcef);
+				background-image:    -moz-linear-gradient(top, #f0ecff, #e0dcef);
+				background-image:     -ms-linear-gradient(top, #f0ecff, #e0dcef);
+				background-image:      -o-linear-gradient(top, #f0ecff, #e0dcef);
+				background-image:         linear-gradient(top, #f0ecff, #e0dcef);
+				-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset; 
+				-moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset;  
+				box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;        
+				border-top: none;
+				text-shadow: 0 1px 0 rgba(255,255,255,.5); 
+			}
+
+			.data-table td:first-child, .data-table th:first-child {
+				border-left: none;
+			}
+
+			.data-table th:first-child {
+				-moz-border-radius: 6px 0 0 0;
+				-webkit-border-radius: 6px 0 0 0;
+				border-radius: 6px 0 0 0;
+			}
+
+			.data-table th:last-child {
+				-moz-border-radius: 0 6px 0 0;
+				-webkit-border-radius: 0 6px 0 0;
+				border-radius: 0 6px 0 0;
+			}
+
+			.data-table tr:last-child td:first-child {
+				-moz-border-radius: 0 0 0 6px;
+				-webkit-border-radius: 0 0 0 6px;
+				border-radius: 0 0 0 6px;
+			}
+
+			.data-table tr:last-child td:last-child {
+				-moz-border-radius: 0 0 6px 0;
+				-webkit-border-radius: 0 0 6px 0;
+				border-radius: 0 0 6px 0;
+			}
+		</style>
 	</head>
 	<body>
 		This is a list of sample applications built on top of X-Stream.ly:
-		<table>
+		<table class="data-table">
 			<tr><th>Sample</th><th>Description</th><th>Level</th><th>Features demonstraited</th></tr>
 			<tr>
 				<td><a href="./toys/toys.html">Sending Toys</a> (from home page)</td>
 				<td>Simple message passing to your-self</td>
 				<td>Basic</td>
-				<td></td>
+				<td>Message Sending and Recieving</td>
 			</tr>
 			<tr>
 				<td><a href="./ballfollowingmouse/ballfollowingmouse.html">Ball Following Mouse</a> (from home page)</td>
 				<td>A ball follows your mouse around</td>
 				<td>Basic</td>
-				<td></td>
+				<td>Message Sending and Recieving</td>
 			</tr>
 			<tr>
 				<td><a href="./chat/chat.html">Chat</a></td>
 				<td>A multi-user chat room</td>
 				<td>Intermidate</td>
-				<td>Presence</td>
+				<td>Message Sending and Recieving, Presence</td>
 			</tr>
 		</table>
 	</body>
