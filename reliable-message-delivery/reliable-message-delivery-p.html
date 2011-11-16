@@ -1,0 +1,50 @@
+<html>
+	<head>
+		<script type="text/javascript" src="http://x-stream.ly/xstreamlyClient.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+		<script>
+			$(window).load(function() {
+				//this is just so every user gets a diffrent stream
+				var streamName = 'rStream';
+				var messageNumber =0;
+				var producer = new XStreamly('playground', '08c35265-585c-45e7-b99b-a42cd8691d12');
+		    	
+		    	var producerChannel = producer.subscribe(streamName);
+		    	
+		    	var sendMessage = function(reliable){
+		    		var message = {sent: new Date(),number:messageNumber++,reliable:reliable};
+					producerChannel.trigger('message', message,reliable);
+					$('#messages-sent').append('<li>'+JSON.stringify(message)+'</li>');
+		    	};
+		    	        	
+				$("#send-message-reliable").click(function() {
+					sendMessage(true);
+					return false; // don't handle click further
+				});
+				
+				$("#send-message-normal").click(function() {
+					sendMessage(false);
+					return false; // don't handle click further
+				});
+				
+			});
+		</script>
+	</head>
+	<body>
+		<h3>Reliable Message Delivery - Producer</h3>
+		<p>
+			You can send two types of messages: normal and reliable to the client.
+			The normal message will only be recieved by the client it if is online (start)
+			when the producer sends the message.  Reliable messages however will be queued
+			for deliver if the client is offline (stoped) when the message is sent.
+		</p>
+		
+		<input type="button" id="send-message-reliable" value="Send Reliable Message"/>
+		<input type="button" id="send-message-normal" value="Send Normal Message"/>
+		<br/>
+		Messages Sent:
+		<ul id="messages-sent">
+		</ul>
+
+	</body>
+</html>

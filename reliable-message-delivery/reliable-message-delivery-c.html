@@ -1,0 +1,63 @@
+<html>
+	<head>
+		<script type="text/javascript" src="http://x-stream.ly/xstreamlyClient.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+		<script>
+			$(window).load(function() {
+				//this is just so every user gets a diffrent stream
+				var streamName = 'rStream';
+				var messageNumber =0;		    				
+				var consumer;
+				
+				$('#start-client').click(function(){
+					if(consumer){
+						return;
+					}
+					
+					$('#current-state').text('Online');
+					consumer= new XStreamly('playground', '08c35265-585c-45e7-b99b-a42cd8691d12');
+		    		//this is just so every user gets a diffrent stream
+		    		var consumerChannel = consumer.subscribe(streamName,
+		    			{includeMyMessages: true,
+		    			includePersistedMessages:true});
+		    		
+		    		consumerChannel.bind('message', function(data,key) {
+		        		$("#messages-recieved").append('<li>recieved at: '+(new Date())+', data: '+JSON.stringify(data)+'</li>');
+		        		if(key){
+		        			consumerChannel.removePersistedMessage(key);
+		        		}
+		    		});
+		    		
+		    		return false;
+				});
+				
+				$('#stop-client').click(function(){
+					consumer.stop();
+					consumer =undefined;
+					$('#messages-recieved li').remove();
+					$('#current-state').text('Offline');
+				});
+				
+			});
+		</script>
+	</head>
+	<body>
+		<h3>Reliable Message Delivery - Client</h3>
+		<p>
+			Use this to simulate a consumer with a unreliable network connection.  You can
+			start and stop the connection to simulate it going on and offline.
+		</p>
+		<p>
+			While you are online (started) you will receive both reliable and normal messages.
+			If you go offline any normal messages sent will be lost but all the reliable
+			messages that were sent will be delivered once you come back online.
+		</p>
+		<input type="button" id="start-client" value="Start Client"/>
+		<input type="button" id="stop-client" value="Stop Client"/>
+		<br/>
+		<p>Current State:<div id="current-state">Offline</div></p>
+		Messages Recieved:
+		<ul id="messages-recieved">
+		</ul>
+	</body>
+</html>
