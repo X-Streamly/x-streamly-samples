@@ -9,8 +9,7 @@
 			//be don't want to hard code a stream name so that if two people
 			//are using the sample at the same time they shouldn't send each
 			//other messages	
-			var startSample = function(streamName){
-			alert('p '+streamname);
+			window.startSample = function(streamName){
 				var messageNumber =0;
 				var producer = new XStreamly('playground', '08c35265-585c-45e7-b99b-a42cd8691d12');
 		    	
