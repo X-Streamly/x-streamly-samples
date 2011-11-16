@@ -6,7 +6,7 @@
 			$(window).load(function() {
 
 				var xstreamly = new XStreamly('playground', '08c35265-585c-45e7-b99b-a42cd8691d12');
-				var streamName = 'ballexample'+Math.round(Math.random()*1000000);
+				var streamName = 'sample-balls'+Math.round(Math.random()*1000000);
 				var channel = xstreamly.subscribe(streamName, { includeMyMessages: true });
 				xstreamly.connection.bind(undefined,function(eventName,data){
            			$("#demo-fast-stats").html('Connection status: '+eventName+'<br/><br/><br/><br/>');
