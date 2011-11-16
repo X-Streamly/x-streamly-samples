@@ -3,12 +3,20 @@
 		<title>
 			Reliable Message Delivery
 		</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+		<script>
+			$(window).load(function() {
+				var sharedStreamName = 'Bob';
+				document.getElementById('sample-consumer').contentWindow.streamName=sharedStreamName;
+				document.getElementById('sample-producer').contentWindow.startSample(sharedStreamName);
+			});
+		</script>
 	</head>
 	<body>
-		<iframe src="reliable-message-delivery-c.html" width="100%" height="300">
+		<iframe src="reliable-message-delivery-c.html" id="sample-consumer" width="100%" height="300">
 			<p>your browser must support iframes to view this example</p>
 		</iframe>
-		<iframe src="reliable-message-delivery-p.html" width="100%" height="300">
+		<iframe src="reliable-message-delivery-p.html" id="sample-producer" width="100%" height="300">
 			<p>your browser must support iframes to view this example</p>
 		</iframe>
 	</body>

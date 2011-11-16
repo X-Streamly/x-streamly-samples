@@ -3,13 +3,15 @@
 		<script type="text/javascript" src="http://x-stream.ly/xstreamlyClient.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 		<script>
+			//this get overriden by index.html so that each user has a diffrent
+			//stream name
+			var streamName = 'defaultStreamName';
 			$(window).load(function() {
-				//this is just so every user gets a diffrent stream
-				var streamName = 'rStream';
 				var messageNumber =0;		    				
 				var consumer;
 				
 				$('#start-client').click(function(){
+					alert('c '+streamName);
 					if(consumer){
 						return;
 					}

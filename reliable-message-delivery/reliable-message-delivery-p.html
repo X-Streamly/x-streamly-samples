@@ -3,9 +3,14 @@
 		<script type="text/javascript" src="http://x-stream.ly/xstreamlyClient.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 		<script>
-			$(window).load(function() {
-				//this is just so every user gets a diffrent stream
-				var streamName = 'rStream';
+			//this gets called by index.html
+			//we need to do it this way for the sample so that
+			//both the consumer and the producer share aunique stream name
+			//be don't want to hard code a stream name so that if two people
+			//are using the sample at the same time they shouldn't send each
+			//other messages	
+			var startSample = function(streamName){
+			alert('p '+streamname);
 				var messageNumber =0;
 				var producer = new XStreamly('playground', '08c35265-585c-45e7-b99b-a42cd8691d12');
 		    	
@@ -26,8 +31,9 @@
 					sendMessage(false);
 					return false; // don't handle click further
 				});
-				
-			});
+			}
+			
+
 		</script>
 	</head>
 	<body>
