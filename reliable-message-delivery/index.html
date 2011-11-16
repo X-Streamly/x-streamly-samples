@@ -6,7 +6,7 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 		<script>
 			$(window).load(function() {
-				var sharedStreamName = var streamName = 'sample-reliable'+Math.round(Math.random()*1000000);;
+				var sharedStreamName = 'sample-reliable'+Math.round(Math.random()*1000000);;
 				document.getElementById('sample-consumer').contentWindow.streamName=sharedStreamName;
 				document.getElementById('sample-producer').contentWindow.startSample(sharedStreamName);
 			});
