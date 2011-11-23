@@ -73,13 +73,10 @@ jQuery(function() {
         setInterval(resetAutocomplete, 10000);
     }
 
-    //BDW hack this isn't working for me and doesn't seem like it is needed
-    //$("input[placeholder]").placeholder();
+    $("input[placeholder]").placeholder();
 
-    resizeChat();
-    jQuery(window).resize(resizeChat);
-    resizeParticipants();
-    jQuery(window).resize(resizeParticipants);
+    resizeChatLayout();
+    jQuery(window).resize(resizeChatLayout);
 
     // Message form
     $("#new_message").submit(function(event) {
@@ -419,10 +416,13 @@ var NurphSocket = {
         this.channel = this.xstreamly.subscribe(channelName, {
             userInfo: {
                 name: currentUserName,
-                profilePic: currentuserPic
+                // NOTE for BW: currentUserPic is now set in our application layout
+                // like so (and we can set any other required attributes too):
+                // var currentUserName = <%= logged_in? ? "'#{h(current_user.display_name)}'" : "undefined" %>;
+                // var currentUserPic = <%= logged_in? ? "'#{h(current_user.avatar_url)}'" : "undefined" %>;
+                profilePic: currentUserPic
             },
             includePersistedMessages: true,
-            includeMyMessages: true,
             subscriptionLoaded: function() {
                 loaded = true;
                 if (initialMessages.length > 0) {
@@ -440,7 +440,9 @@ var NurphSocket = {
             members.each(NurphSocket.addParticipant);
 
             NurphSocket.send({
-                content: currentUserName + " has entered the channel",
+                // NOTE for BW: Removed the username prefix as we set it in the template
+                // using the generated_by.
+                content: "has entered the channel",
                 type: 'event',
                 generated_by: {
                     display_name: currentUserName
@@ -477,7 +479,9 @@ var NurphSocket = {
         $('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
         if (NurphSocket.isAuthoritiveClient()) {
             NurphSocket.send({
-                content: participant.memberInfo.name + " has left the channel",
+                // NOTE for BW: Removed the username prefix as we set it in the template
+                // using the generated_by.
+                content: "has left the channel",
                 type: 'event',
                 generated_by: {
                     display_name: participant.memberInfo.name
@@ -494,7 +498,7 @@ var NurphSocket = {
         var amAuthority = true;
         NurphSocket.channel.presenceChannel.members.each(function(member) {
             if (member.id < myId) {
-                amAuthority= false;
+                amAuthority = false;
             }
         });
         return amAuthority;
@@ -528,6 +532,8 @@ var NurphSocket = {
         setInterval(NurphSocket.updateDebug, 1000);
     },
     send: function(message) {
+        //put messages from me straight in the DOM
+        insert_messages(message);
         this.channel.trigger('remark', message, true);
     },
     disconnect: function() {
@@ -560,12 +566,17 @@ function insert_messages(data) {
     return true;
 }
 
-var resizeChat = function() {
-    jQuery("body:not(.iphone) #chat").css("height", jQuery(window).height() - 300);
+// NOTE for BW: I've added a resize method on the #front div and combined it in to
+// a single method.
+var resizeChatLayout = function() {
+		jQuery("body:not(.iphone) #chat").css("height", jQuery(window).height() - 300);
 
     // Scroll chat window to bottom
     var chat = jQuery("#chat").get(0);
     if (chat) chat.scrollTop = chat.scrollHeight;
+
+		jQuery("body:not(.iphone) #front").css("height", jQuery("#content").height());
+		jQuery("body:not(.iphone) #channel_contributors").css("height", jQuery("#content").height() - 167);
 };
 
 var resizeParticipants = function() {
