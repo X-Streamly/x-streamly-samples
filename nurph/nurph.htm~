@@ -13,7 +13,9 @@
 
         /* if this was running nurph domain this would work*/
         twttr.anywhere(function(T) {
+            console.log('got T callback')
             if (T.isConnected()) {
+              console.log('T is connected')
                 currentUserName = T.currentUser.data('screen_name');
                 currentuserPic = T.currentUser.data('profile_image_url');
             }

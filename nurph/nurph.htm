@@ -18,6 +18,10 @@
               console.log('T is connected')
                 currentUserName = T.currentUser.data('screen_name');
                 currentuserPic = T.currentUser.data('profile_image_url');
+            } else {
+              T.bind("authComplete", function (e, user) {
+                console.log('auth completed');
+              });
             }
         });
     </script>
