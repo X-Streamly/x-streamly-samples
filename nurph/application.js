@@ -583,6 +583,20 @@ var NurphSocket = {
         //put messages from me straight in the DOM
         insert_messages(message);
         this.channel.trigger('remark', message, true);
+
+        try {
+            if (message.type === "remark") {
+                this.postToNurphServer(message);
+            }
+        }
+        catch (ex) {
+            log('could not write to NURPH');
+        }
+    },
+    postToNurphServer: function(message) {
+        $.post(this.url + this.channelName + '/messages', {message:message}, function() {
+            log('done sending message to nurph');
+        }, "json");
     },
     disconnect: function() {
         log("Shutting down the socket");
