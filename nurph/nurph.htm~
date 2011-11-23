@@ -5,7 +5,7 @@
     <link href="http://assets.nur.ph/stylesheets/application.css?1321982389" media="screen" rel="stylesheet" type="text/css" />
     <link href="http://assets.nur.ph/javascripts/jquery.autocomplete.css?1321982244" media="screen" rel="stylesheet" type="text/css" />
     
-    <script src="http://platform.twitter.com/anywhere.js?id=6n7EZxVNEVBAqiYvm41plA&amp;v=1"></script>
+    <script src="http://platform.twitter.com/anywhere.js?id=9j06Pu7fHlRQDjAbyhdpw&v=1"></script>
     <script>
         /*TODO: this is info that needs to be inserted dynamicly*/
         var currentUserName = 'CodingTrain';
