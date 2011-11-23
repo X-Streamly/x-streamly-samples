@@ -483,7 +483,7 @@ var NurphSocket = {
         this.channel.bind('xstreamly:member_removed', this.removeParticipant);
         this.channel.bind('xstreamly:member_modified', this.participantModified);
 
-        this.channel.bind('remark', function(remark) {
+        this.channel.bind_all(function(eventType,remark) {
             //we want to save all the inital messages
             //so they can be layed out correctly.
             if (loaded) {
@@ -582,7 +582,7 @@ var NurphSocket = {
     send: function(message) {
         //put messages from me straight in the DOM
         insert_messages(message);
-        this.channel.trigger('remark', message, true);
+        this.channel.trigger(message.type, message, true);
 
         try {
             if (message.type === "remark") {
