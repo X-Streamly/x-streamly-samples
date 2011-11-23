@@ -383,6 +383,27 @@ var internal_template = jQuery.template(
     '</tr>'
 );
 
+function userLoggedOn(T) {
+    console.log('T is connected')
+    currentUserName = T.currentUser.data('screen_name');
+    currentUserPic = T.currentUser.data('profile_image_url');
+    console.log(currentUserName + ' ' + currentUserPic);
+}
+
+/* if this was running nurph domain this would work*/
+twttr.anywhere(function(T) {
+    console.log('got T callback')
+    if (T.isConnected()) {
+        userLoggedOn(T);
+    } else {
+        T.bind("authComplete", function(e, user) {
+            userLoggedOn(T);
+        });
+        T("#login").connectButton();
+    }
+
+});
+
 var NurphSocket = {
     url: '',
     channelName: '',
@@ -438,17 +459,19 @@ var NurphSocket = {
 
         this.channel.bind('xstreamly:subscription_succeeded', function(members) {
             members.each(NurphSocket.addParticipant);
-
-            NurphSocket.send({
-                // NOTE for BW: Removed the username prefix as we set it in the template
-                // using the generated_by.
-                content: "has entered the channel",
-                type: 'event',
-                generated_by: {
-                    display_name: currentUserName
-                },
-                created_at: new Date()
-            });
+            //only send notification for users that are logged in
+            if (currentUserName) {
+                NurphSocket.send({
+                    // NOTE for BW: Removed the username prefix as we set it in the template
+                    // using the generated_by.
+                    content: "has entered the channel",
+                    type: 'event',
+                    generated_by: {
+                        display_name: currentUserName
+                    },
+                    created_at: new Date()
+                });
+            }
         });
 
         this.channel.bind('xstreamly:member_added', this.addParticipant);
@@ -478,16 +501,19 @@ var NurphSocket = {
         $("#participant-" + participant.id).remove();
         $('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
         if (NurphSocket.isAuthoritiveClient()) {
-            NurphSocket.send({
-                // NOTE for BW: Removed the username prefix as we set it in the template
-                // using the generated_by.
-                content: "has left the channel",
-                type: 'event',
-                generated_by: {
-                    display_name: participant.memberInfo.name
-                },
-                created_at: new Date()
-            });
+            //only send notifications for users that are logged in
+            if (participant.memberInfo.name) {
+                NurphSocket.send({
+                    // NOTE for BW: Removed the username prefix as we set it in the template
+                    // using the generated_by.
+                    content: "has left the channel",
+                    type: 'event',
+                    generated_by: {
+                        display_name: participant.memberInfo.name
+                    },
+                    created_at: new Date()
+                });
+            }
         }
     },
     //we want to only publish shared events (like out side tweets and enter exit messgages)
