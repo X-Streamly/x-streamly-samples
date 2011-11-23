@@ -388,21 +388,26 @@ function userLoggedOn(T) {
     currentUserName = T.currentUser.data('screen_name');
     currentUserPic = T.currentUser.data('profile_image_url');
     console.log(currentUserName + ' ' + currentUserPic);
+    if (NurphSocket.channel) {
+        NurphSocket.channel.memberInfo({ name: currentUserName, profilePic: currentUserPic });
+    }
 }
 
-/* if this was running nurph domain this would work*/
-twttr.anywhere(function(T) {
-    console.log('got T callback')
-    if (T.isConnected()) {
-        userLoggedOn(T);
-    } else {
-        T.bind("authComplete", function(e, user) {
+//if the currentUserName variable is set via the html page
+//then just use that, if it is not specified then have the user log in
+if (!currentUserName) {
+    twttr.anywhere(function(T) {
+        console.log('got T callback')
+        if (T.isConnected()) {
             userLoggedOn(T);
-        });
-        T("#login").connectButton();
-    }
-
-});
+        } else {
+            T.bind("authComplete", function(e, user) {
+                userLoggedOn(T);
+            });
+            T("#login").connectButton();
+        }
+    });
+}
 
 var NurphSocket = {
     url: '',
@@ -476,6 +481,7 @@ var NurphSocket = {
 
         this.channel.bind('xstreamly:member_added', this.addParticipant);
         this.channel.bind('xstreamly:member_removed', this.removeParticipant);
+        this.channel.bind('xstreamly:member_modified', this.participantModified);
 
         this.channel.bind('remark', function(remark) {
             //we want to save all the inital messages
@@ -492,10 +498,26 @@ var NurphSocket = {
         var name = participant.memberInfo.name;
         var pic = participant.memberInfo.profilePic;
         $('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
+
+        var data;
+
+        if (name) {
+            data = '<a href="http://twitter.com/' + name + '" title="' + name + '"><img alt="' + name + '" height="20" src="' + pic + '" width="20" /></a>' +
+            '<a href="http://twitter.com/' + name + '" class="brash">' + name + '</a>';
+        }
+        else {
+            data = 'Anonymous'
+        }
+
         $('#channel_contributors').append($('<li id="participant-' + participant.id + '" class="participant">' +
-        '<a href="http://twitter.com/' + name + '" title="' + name + '"><img alt="' + name + '" height="20" src="' + pic + '" width="20" /></a>' +
-        '<a href="http://twitter.com/' + name + '" class="brash">' + name + '</a>' +
-        '</li>'));
+            data +
+            '</li>'));
+    },
+    participantModified: function(participant) {
+        var name = participant.memberInfo.name;
+        var pic = participant.memberInfo.profilePic;
+        $('#participant-' + participant.id).html('<a href="http://twitter.com/' + name + '" title="' + name + '"><img alt="' + name + '" height="20" src="' + pic + '" width="20" /></a>' +
+            '<a href="http://twitter.com/' + name + '" class="brash">' + name + '</a>');
     },
     removeParticipant: function(participant) {
         $("#participant-" + participant.id).remove();
