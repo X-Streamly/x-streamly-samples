@@ -1,0 +1,4 @@
+rails generate model TwitterStreams user:string topic:string streamKey:string
+
+
+rake db:migrate

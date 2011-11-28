@@ -21,19 +21,36 @@ class XStreamlyController < ApplicationController
       parsed_json = ActiveSupport::JSON.decode(params[:Data][:Message])
       action = parsed_json['content']
       channel =params[:Data][:Channel]
+      user = parsed_json['generated_by']['display_name']
       if(action.index('entered'))
         #to be pulled from your DB
         token  = '<from user data>'
         tokenSecret = '<from user data>'
         
+        oldUser = TwitterStreams.find_by_user_and_topic(user,channel)
+        if (oldUser)
+          puts 'removing old user'
+          oldUser.destroy()
+          @client.removeTwitterStream(oldUser.streamKey)
+        end
+          
+        
         requestData = @client.generateRequestData(channel,@appKey,@appSecret,token,tokenSecret )
         key = @client.setTwitterStream(channel,'tweet',requestData)
-        puts key
-        render :text => 'SUCCESS'
+        puts 'key:' +key
+        stream = TwitterStreams.new
+        stream.user = user
+        stream.topic = channel
+        stream.streamKey = key
+        stream.save
+        render :text => 'SUCCESS ENTER'
       else
-        puts '--'
-        puts 'exit'
-        render :text => 'exit'
+        puts 'removing user'
+        stream = TwitterStreams.find_by_user_and_topic(user,channel)
+        puts 'got user: "'+stream.streamKey+'"'
+        @client.removeTwitterStream(stream.streamKey)
+        stream.destroy
+        render :text => 'SUCCESS EXIT'
       end
       
     else
