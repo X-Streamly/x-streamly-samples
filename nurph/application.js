@@ -243,33 +243,34 @@ Message.prototype.parse = function() {
     if (this.sentByYou) this.classNames.push("you");
     if (this.internal) this.classNames.push("internal");
 
-    this.formatContent();
 
     // Setup template based on message type
-    switch(this.type) {
-    case "internal":
-        this.template = internal_template;
-        this.display_name = this.sender.display_name;
-        this.avatar = this.sender.avatar_url;
-        break;
-    case "remark":
-        this.template = remark_template;
-        this.display_name = this.sender.display_name;
-        this.avatar = this.sender.avatar_url;
-        break;
-    case "event":
-        this.template = event_template;
-        this.display_name = this.generated_by.display_name;
-        break;
-    case "tweet":
-        this.template = tweet_template;
-        this.display_name = this.sender.display_name;
-        this.avatar = this.sender.avatar_url;
-        // Update the 'latest tweet' box
-        // TODO: do it when "after_publish.message" event is fired
-        jQuery('#channel_title p').html(this.content);
-        break;
+    switch (this.type) {
+        case "internal":
+            this.template = internal_template;
+            this.display_name = this.sender.display_name;
+            this.avatar = this.sender.avatar_url;
+            break;
+        case "remark":
+            this.template = remark_template;
+            this.display_name = this.sender.display_name;
+            this.avatar = this.sender.avatar_url;
+            break;
+        case "event":
+            this.template = event_template;
+            this.display_name = this.generated_by.display_name;
+            break;
+        case "tweet":
+            this.template = tweet_template;
+            this.content = this.text;
+            this.display_name = this.screenname;
+            this.avatar = this.profile_pic;
+            // Update the 'latest tweet' box
+            // TODO: do it when "after_publish.message" event is fired
+            jQuery('#channel_title p').html(this.content);
+            break;
     }
+    this.formatContent();
 
     // Mark message as a response if it contains current user name
     var strippedContent = jQuery("<div>").html(this.content).text();
@@ -428,6 +429,25 @@ var NurphSocket = {
 
         init_channel();
 
+        $(window).bind('beforeunload', function() {
+            try {
+                if (NurphSocket.channel.presenceChannel.members.count === 1) {
+                    //we are the only one in the channel so we should send a message that we are leaving
+                    NurphSocket.send({
+                        content: "has left the channel",
+                        type: 'event',
+                        generated_by: {
+                            display_name: currentUserName
+                        },
+                        created_at: new Date()
+                    });
+                }
+            }
+            catch (ex) {
+                log(ex);
+            }
+        });
+
         // Set twitter-anywhere-user classes to Twitter links, and update the document title.
         // TODO: don't run it every 0.5s - set the class manually instead
         /*setInterval(function() {
@@ -451,7 +471,12 @@ var NurphSocket = {
             includePersistedMessages: true,
             subscriptionLoaded: function() {
                 loaded = true;
-                if (initialMessages.length > 0) {
+                initialMessages.sort(function(a, b) {
+                    new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+                });
+                if (initialMessages.length > 10) {
+                    insert_messages(initialMessages.slice(initialMessages.length - 10, initialMessages.length - 1));
+                } else if (initialMessages.length > 0) {
                     insert_messages(initialMessages);
                 }
                 initialMessages = [];
@@ -483,7 +508,10 @@ var NurphSocket = {
         this.channel.bind('xstreamly:member_removed', this.removeParticipant);
         this.channel.bind('xstreamly:member_modified', this.participantModified);
 
-        this.channel.bind_all(function(eventType,remark) {
+        this.channel.bind_all(function(eventType, remark) {
+            if (eventType === 'tweet') {
+                remark.type = 'tweet';
+            }
             //we want to save all the inital messages
             //so they can be layed out correctly.
             if (loaded) {
@@ -594,7 +622,7 @@ var NurphSocket = {
         }
     },
     postToNurphServer: function(message) {
-        $.post(this.url + this.channelName + '/messages', {message:message}, function() {
+        $.post(this.url + this.channelName + '/messages', { message: message }, function() {
             log('done sending message to nurph');
         }, "json");
     },
@@ -620,7 +648,7 @@ function insert_messages(data) {
         return false;
     }
 
-    jQuery.each(data.reverse(), function(key, message) {
+    jQuery.each(data, function(key, message) {
         new Message(message).publish();
     });
 
