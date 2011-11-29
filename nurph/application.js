@@ -457,7 +457,7 @@ var NurphSocket = {
 
         var loaded = false;
         var initialMessages = [];
-
+        //XStreamly.port = 444;
         this.xstreamly = new XStreamly('1183738a-fa9b-4f83-8594-407fa27c2e7b', '2176a6e7-cfe6-4e63-bee5-41d30739c438');
         this.channel = this.xstreamly.subscribe(channelName, {
             userInfo: {

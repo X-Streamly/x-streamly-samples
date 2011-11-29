@@ -47,9 +47,11 @@ class XStreamlyController < ApplicationController
       else
         puts 'removing user'
         stream = TwitterStreams.find_by_user_and_topic(user,channel)
-        puts 'got user: "'+stream.streamKey+'"'
-        @client.removeTwitterStream(stream.streamKey)
-        stream.destroy
+        if(!stream.nil?)
+			puts 'got user: "'+stream.streamKey+'"'
+			@client.removeTwitterStream(stream.streamKey)
+			stream.destroy
+		end
         render :text => 'SUCCESS EXIT'
       end
       
