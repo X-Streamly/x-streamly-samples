@@ -1,7 +1,7 @@
 // Sound check
 if (typeof soundManager !== "undefined") {
-    soundManager.url        = "/soundmanager/swf/";
-    soundManager.debugMode  = document.location.hash === "#debug";
+    soundManager.url = "/soundmanager/swf/";
+    soundManager.debugMode = document.location.hash === "#debug";
     soundManager.onready(function() {
         if (soundManager.supported()) {
             soundManager.createSound({
@@ -186,7 +186,7 @@ jQuery(function() {
 var Message = function(options) {
     options = options || {};
     // Don't allow to overwrite Message.prototype properties
-    _.each(_.keys(Message.prototype), function (property) {
+    _.each(_.keys(Message.prototype), function(property) {
         delete options[property];
     });
 
@@ -214,7 +214,7 @@ Message.prototype.formatContent = function() {
 
     function blankify(text) {
         var hostWithProtocol = document.location.protocol + "//" + document.location.host;
-        return jQuery("<div>").html(text).find("a:not([href^="+ hostWithProtocol  +"])").each(function() {
+        return jQuery("<div>").html(text).find("a:not([href^=" + hostWithProtocol + "])").each(function() {
             this.target = "_blank";
         }).end().html();
     }
@@ -232,7 +232,7 @@ Message.prototype.formatContent = function() {
     }
 
     if (!this.internal) this.content = linkify(escapeHTML(this.content));
-    this.content =  channelize(twitterize(blankify(this.content)));
+    this.content = channelize(twitterize(blankify(this.content)));
 };
 
 Message.prototype.parse = function() {
@@ -279,7 +279,7 @@ Message.prototype.parse = function() {
     }
 };
 
-Message.prototype.publish = function () {
+Message.prototype.publish = function() {
     // No blank messages please
     if (!this.content) {
         log("log discarding blank message");
@@ -295,14 +295,14 @@ Message.prototype.publish = function () {
         if (this.display_name === originalSenderName) {
             original.removeClass("you");
             original.attr("id", "message_" + this.id);
-        // We don't have message with such ID yet, so add it
+            // We don't have message with such ID yet, so add it
         } else {
             this.append();
         }
     }
 };
 
-Message.prototype.append = function () {
+Message.prototype.append = function() {
     var chat = jQuery("#chat");
     var isNearBottom = chat.isNearBottom();
 
@@ -323,7 +323,7 @@ Message.prototype.append = function () {
             if (this.type === "remark" && playSound) {
                 soundManager.play("click");
             }
-        } catch(e) {
+        } catch (e) {
             log("There was an error playing the sound effects.");
         }
     }
@@ -331,61 +331,61 @@ Message.prototype.append = function () {
 
 // Templates for messages
 var user_template = jQuery.template(
-    '<li class="${participation} participant ${display_name}">'+
-    '<img style="width:20px; height:20px" src="${avatar_url}" /> '+
-    '<a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>'+
+    '<li class="${participation} participant ${display_name}">' +
+    '<img style="width:20px; height:20px" src="${avatar_url}" /> ' +
+    '<a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>' +
     '</li>'
 );
 
 var tweet_template = jQuery.template(
-    '<tr id="message_${id}" class="message-record tweet ${classNames} remark">'+
-    '  <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="20px" height="20px" src="${avatar}" /></a></td>'              +
-    '   <td class="message">'                                        +
-    '     <div class="readable">'                                    +
-    '        <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>'               +
-    '     </div>'                                                    +
-    '   </td>'                                                       +
-    '  <td class="time">'                                            +
-    '    ${time}'                                                    +
-    '  </td>'                                                        +
+    '<tr id="message_${id}" class="message-record tweet ${classNames} remark">' +
+    '  <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="20px" height="20px" src="${avatar}" /></a></td>' +
+    '   <td class="message">' +
+    '     <div class="readable">' +
+    '        <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
+    '     </div>' +
+    '   </td>' +
+    '  <td class="time">' +
+    '    ${time}' +
+    '  </td>' +
     '</tr>'
 );
 
 var event_template = jQuery.template(
-    '<tr id="message_${id}" class="message-record ${classNames} event">'+
-    '  <td class="avatar"></td><td class="message"><div class="readable"><p>'+
-    '  <a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a> ${content}</p></div></td>'+
-    '  <td class="time">'+
-    '    ${time}'+
-    '  </td>'+
+    '<tr id="message_${id}" class="message-record ${classNames} event">' +
+    '  <td class="avatar"></td><td class="message"><div class="readable"><p>' +
+    '  <a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a> ${content}</p></div></td>' +
+    '  <td class="time">' +
+    '    ${time}' +
+    '  </td>' +
     '</tr>'
 );
 
 var remark_template = jQuery.template(
-    '<tr id="message_${id}" class="message-record ${classNames} remark">'+
-    '  <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="22px" height="22px" src="${avatar}" /></a></td>'              +
-    '   <td class="message">'                                        +
-    '     <div class="readable">'                                    +
-    '        <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>'               +
-    '     </div>'                                                    +
-    '   </td>'                                                       +
-    '  <td class="time">'                                            +
-    '    ${time}'                                                    +
-    '  </td>'                                                        +
+    '<tr id="message_${id}" class="message-record ${classNames} remark">' +
+    '  <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="22px" height="22px" src="${avatar}" /></a></td>' +
+    '   <td class="message">' +
+    '     <div class="readable">' +
+    '        <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
+    '     </div>' +
+    '   </td>' +
+    '  <td class="time">' +
+    '    ${time}' +
+    '  </td>' +
     '</tr>'
 );
 
 var internal_template = jQuery.template(
-    '<tr class="message-record ${classNames}">'+
-    '  <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="22px" height="22px" src="${avatar}" /></a></td>'              +
-    '   <td class="message">'                                        +
-    '     <div class="readable">'                                    +
-    '        <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>'               +
-    '     </div>'                                                    +
-    '   </td>'                                                       +
-    '  <td class="time">'                                            +
-    '    ${time}'                                                    +
-    '  </td>'                                                        +
+    '<tr class="message-record ${classNames}">' +
+    '  <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="22px" height="22px" src="${avatar}" /></a></td>' +
+    '   <td class="message">' +
+    '     <div class="readable">' +
+    '        <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
+    '     </div>' +
+    '   </td>' +
+    '  <td class="time">' +
+    '    ${time}' +
+    '  </td>' +
     '</tr>'
 );
 
@@ -467,10 +467,6 @@ var NurphSocket = {
         this.channel = this.xstreamly.subscribe(channelName, {
             userInfo: {
                 name: currentUserName,
-                // NOTE for BW: currentUserPic is now set in our application layout
-                // like so (and we can set any other required attributes too):
-                // var currentUserName = <%= logged_in? ? "'#{h(current_user.display_name)}'" : "undefined" %>;
-                // var currentUserPic = <%= logged_in? ? "'#{h(current_user.avatar_url)}'" : "undefined" %>;
                 profilePic: currentUserPic
             },
             includePersistedMessages: true,
@@ -497,8 +493,6 @@ var NurphSocket = {
             //only send notification for users that are logged in
             if (currentUserName) {
                 NurphSocket.send({
-                    // NOTE for BW: Removed the username prefix as we set it in the template
-                    // using the generated_by.
                     content: "has entered the channel",
                     type: 'event',
                     generated_by: {
@@ -517,6 +511,11 @@ var NurphSocket = {
             if (eventType === 'tweet') {
                 remark.type = 'tweet';
             }
+            
+            if (!remark.type) {
+                return;
+            }
+            
             //we want to save all the inital messages
             //so they can be layed out correctly.
             if (loaded) {
@@ -559,8 +558,6 @@ var NurphSocket = {
             //only send notifications for users that are logged in
             if (participant.memberInfo.name) {
                 NurphSocket.send({
-                    // NOTE for BW: Removed the username prefix as we set it in the template
-                    // using the generated_by.
                     content: "has left the channel",
                     type: 'event',
                     generated_by: {
@@ -656,17 +653,15 @@ function insert_messages(data) {
     return true;
 }
 
-// NOTE for BW: I've added a resize method on the #front div and combined it in to
-// a single method.
 var resizeChatLayout = function() {
-		jQuery("body:not(.iphone) #chat").css("height", jQuery(window).height() - 300);
+    jQuery("body:not(.iphone) #chat").css("height", jQuery(window).height() - 300);
 
     // Scroll chat window to bottom
     var chat = jQuery("#chat").get(0);
     if (chat) chat.scrollTop = chat.scrollHeight;
 
-		jQuery("body:not(.iphone) #front").css("height", jQuery("#content").height());
-		jQuery("body:not(.iphone) #channel_contributors").css("height", jQuery("#content").height() - 167);
+    jQuery("body:not(.iphone) #front").css("height", jQuery("#content").height());
+    jQuery("body:not(.iphone) #channel_contributors").css("height", jQuery("#content").height() - 167);
 };
 
 var resizeParticipants = function() {
@@ -716,8 +711,8 @@ function update_new_message_count(count) {
 
 function update_document_title_if_idle() {
     if (window.isIdle && window.new_message_count > 0) {
-        document.title = "("+window.new_message_count+") " + document.title_was;
-        window.parent.document.title = "("+window.new_message_count+") " + parent.document.title_was;
+        document.title = "(" + window.new_message_count + ") " + document.title_was;
+        window.parent.document.title = "(" + window.new_message_count + ") " + parent.document.title_was;
     } else {
         document.title = document.title_was;
     }
@@ -728,6 +723,3 @@ function update_document_title_if_idle() {
         return (this.attr("scrollTop") + this.attr("offsetHeight") + threshold) >= this.attr("scrollHeight");
     };
 })(jQuery);
-
-
-
