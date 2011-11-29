@@ -280,6 +280,11 @@ Message.prototype.parse = function() {
 };
 
 Message.prototype.publish = function () {
+    // No blank messages please
+    if (!this.content) {
+        log("log discarding blank message");
+        return false;
+    }
     // Just add the message if it's internal or it was just posted by the current user
     if (!this.id) {
         this.append();
@@ -642,11 +647,6 @@ window.log = function(message) {
 function insert_messages(data) {
     // Ensure we're getting an array
     if (!_.isArray(data)) data = [data];
-
-    // No blank messages please
-    if (_.isEmpty(data[0].content)) {
-        return false;
-    }
 
     jQuery.each(data, function(key, message) {
         new Message(message).publish();
