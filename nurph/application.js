@@ -149,37 +149,37 @@ jQuery(function() {
 
     // Announcements
     // (function($) {
-    //     var channel;
-    //     if ((channel = $("#chat").data("channel-name"))) {
-    //         var content = [
-    //             "Hi @" + window.currentUserName + ", <a href='http://twitter.com/home?status=Come%20chat%20with%20us%20in%20http%3A%2F%2F" + document.location.host + "%2F" + channel +".%20Nurph%20is%20Twitter%27s%20missing%20group%20feature%21' class='no-twitter-hovercard'>invite your followers</a> in to the channel",
-    //             "Try setting your Nurph Channel as your Twitter Bio URL and browser homepage",
-    //             "Tweet to your favorite Twitter Celebrities and tell them about Nurph",
-    //             "Have you subscribed to the <a href='http://blog." + document.location.host + "'>Nurph Blog</a>?"
-    //         ];
-    //         var data = {
-    //             type: "internal",
-    //             internal: true,
-    //             sender: {
-    //                 display_name: "Nurph",
-    //                 avatar_url: "http://a0.twimg.com/profile_images/1125127456/avatar_bigger_reasonably_small.png"
-    //             }
-    //         };
+    // var channel;
+    // if ((channel = $("#chat").data("channel-name"))) {
+    // var content = [
+    // "Hi @" + window.currentUserName + ", <a href='http://twitter.com/home?status=Come%20chat%20with%20us%20in%20http%3A%2F%2F" + document.location.host + "%2F" + channel +".%20Nurph%20is%20Twitter%27s%20missing%20group%20feature%21' class='no-twitter-hovercard'>invite your followers</a> in to the channel",
+    // "Try setting your Nurph Channel as your Twitter Bio URL and browser homepage",
+    // "Tweet to your favorite Twitter Celebrities and tell them about Nurph",
+    // "Have you subscribed to the <a href='http://blog." + document.location.host + "'>Nurph Blog</a>?"
+    // ];
+    // var data = {
+    // type: "internal",
+    // internal: true,
+    // sender: {
+    // display_name: "Nurph",
+    // avatar_url: "http://a0.twimg.com/profile_images/1125127456/avatar_bigger_reasonably_small.png"
+    // }
+    // };
 
-    //         setTimeout(function () {
-    //             // First announcement after 5s
-    //             var message = new Message(_.extend(data, { content: content[0] }));
-    //             message.publish();
+    // setTimeout(function () {
+    // // First announcement after 5s
+    // var message = new Message(_.extend(data, { content: content[0] }));
+    // message.publish();
 
-    //             // Next every hour
-    //             var i  = 1;
-    //             setInterval(function () {
-    //                 var message = new Message(_.extend(data, { content: content[i] }));
-    //                 message.publish();
-    //                 i = (i < content.length - 1) ? i + 1 : 0;
-    //             }, 60 * 60 * 1000);
-    //         }, 5 * 1000);
-    //     }
+    // // Next every hour
+    // var i = 1;
+    // setInterval(function () {
+    // var message = new Message(_.extend(data, { content: content[i] }));
+    // message.publish();
+    // i = (i < content.length - 1) ? i + 1 : 0;
+    // }, 60 * 60 * 1000);
+    // }, 5 * 1000);
+    // }
     // })(jQuery);
 });
 
@@ -339,53 +339,53 @@ var user_template = jQuery.template(
 
 var tweet_template = jQuery.template(
     '<tr id="message_${id}" class="message-record tweet ${classNames} remark">' +
-    '  <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="20px" height="20px" src="${avatar}" /></a></td>' +
-    '   <td class="message">' +
-    '     <div class="readable">' +
-    '        <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
-    '     </div>' +
-    '   </td>' +
-    '  <td class="time">' +
-    '    ${time}' +
-    '  </td>' +
+    ' <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="20px" height="20px" src="${avatar}" /></a></td>' +
+    ' <td class="message">' +
+    ' <div class="readable">' +
+    ' <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
+    ' </div>' +
+    ' </td>' +
+    ' <td class="time">' +
+    ' ${time}' +
+    ' </td>' +
     '</tr>'
 );
 
 var event_template = jQuery.template(
     '<tr id="message_${id}" class="message-record ${classNames} event">' +
-    '  <td class="avatar"></td><td class="message"><div class="readable"><p>' +
-    '  <a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a> ${content}</p></div></td>' +
-    '  <td class="time">' +
-    '    ${time}' +
-    '  </td>' +
+    ' <td class="avatar"></td><td class="message"><div class="readable"><p>' +
+    ' <a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a> ${content}</p></div></td>' +
+    ' <td class="time">' +
+    ' ${time}' +
+    ' </td>' +
     '</tr>'
 );
 
 var remark_template = jQuery.template(
     '<tr id="message_${id}" class="message-record ${classNames} remark">' +
-    '  <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="22px" height="22px" src="${avatar}" /></a></td>' +
-    '   <td class="message">' +
-    '     <div class="readable">' +
-    '        <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
-    '     </div>' +
-    '   </td>' +
-    '  <td class="time">' +
-    '    ${time}' +
-    '  </td>' +
+    ' <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="22px" height="22px" src="${avatar}" /></a></td>' +
+    ' <td class="message">' +
+    ' <div class="readable">' +
+    ' <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
+    ' </div>' +
+    ' </td>' +
+    ' <td class="time">' +
+    ' ${time}' +
+    ' </td>' +
     '</tr>'
 );
 
 var internal_template = jQuery.template(
     '<tr class="message-record ${classNames}">' +
-    '  <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="22px" height="22px" src="${avatar}" /></a></td>' +
-    '   <td class="message">' +
-    '     <div class="readable">' +
-    '        <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
-    '     </div>' +
-    '   </td>' +
-    '  <td class="time">' +
-    '    ${time}' +
-    '  </td>' +
+    ' <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="22px" height="22px" src="${avatar}" /></a></td>' +
+    ' <td class="message">' +
+    ' <div class="readable">' +
+    ' <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
+    ' </div>' +
+    ' </td>' +
+    ' <td class="time">' +
+    ' ${time}' +
+    ' </td>' +
     '</tr>'
 );
 
@@ -464,7 +464,7 @@ var NurphSocket = {
         var initialMessages = [];
         //XStreamly.port = 444;
         this.xstreamly = new XStreamly('1183738a-fa9b-4f83-8594-407fa27c2e7b', '2176a6e7-cfe6-4e63-bee5-41d30739c438');
-        this.channel = this.xstreamly.subscribe(channelName, {
+        this.channel = this.xstreamly.subscribe((currentEnvironment + '-' + channelName), {
             userInfo: {
                 name: currentUserName,
                 profilePic: currentUserPic
@@ -511,11 +511,11 @@ var NurphSocket = {
             if (eventType === 'tweet') {
                 remark.type = 'tweet';
             }
-            
+
             if (!remark.type) {
                 return;
             }
-            
+
             //we want to save all the inital messages
             //so they can be layed out correctly.
             if (loaded) {
@@ -569,7 +569,7 @@ var NurphSocket = {
         }
     },
     //we want to only publish shared events (like out side tweets and enter exit messgages)
-    //once so we nee to pick one client in the room to do it.  The method is to pick
+    //once so we nee to pick one client in the room to do it. The method is to pick
     //the client with the lowest member ID
     isAuthoritiveClient: function() {
         var myId = NurphSocket.channel.presenceChannel.memberId;
