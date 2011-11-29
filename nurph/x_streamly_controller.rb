@@ -35,8 +35,8 @@ class XStreamlyController < ApplicationController
         end
           
         
-        requestData = @client.generateRequestData(channel,@appKey,@appSecret,token,tokenSecret )
-        key = @client.setTwitterStream('#' + channel,'tweet',requestData)
+        requestData = @client.generateRequestData('#' +channel,@appKey,@appSecret,token,tokenSecret )
+        key = @client.setTwitterStream(channel,'tweet',requestData)
         puts 'key:' +key
         stream = TwitterStreams.new
         stream.user = user
