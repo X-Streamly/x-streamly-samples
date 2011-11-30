@@ -399,22 +399,6 @@ function userLoggedOn(T) {
     }
 }
 
-//if the currentUserName variable is set via the html page
-//then just use that, if it is not specified then have the user log in
-if (!currentUserName) {
-    twttr.anywhere(function(T) {
-        console.log('got T callback')
-        if (T.isConnected()) {
-            userLoggedOn(T);
-        } else {
-            T.bind("authComplete", function(e, user) {
-                userLoggedOn(T);
-            });
-            T("#login").connectButton();
-        }
-    });
-}
-
 var NurphSocket = {
     url: '',
     channelName: '',
@@ -475,17 +459,14 @@ var NurphSocket = {
                 initialMessages.sort(function(a, b) {
                     new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
                 });
-                if (initialMessages.length > 10) {
-                    insert_messages(initialMessages.slice(initialMessages.length - 10, initialMessages.length - 1));
-                } else if (initialMessages.length > 0) {
-                    insert_messages(initialMessages);
-                }
-                initialMessages = [];
+
+                insert_messages(initialMessages);
             }
         });
 
         this.xstreamly.onActive(function() {
             $('.message-record').remove();
+            $('.participant').remove();
         });
 
         this.channel.bind('xstreamly:subscription_succeeded', function(members) {
@@ -521,7 +502,15 @@ var NurphSocket = {
             if (loaded) {
                 insert_messages(remark);
             } else {
-                initialMessages.push(remark);
+                var take = true;
+                if (remark.created_at) {
+                    var createdTime = new Date(remark.created_at);
+                    take = (new Date()).getTime() - createdTime.getTime() < 10 * 60 * 1000;
+                }
+
+                if (take) {
+                    initialMessages.push(remark);
+                }
             }
         });
 
