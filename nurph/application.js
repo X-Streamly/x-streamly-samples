@@ -449,6 +449,7 @@ var NurphSocket = {
         //XStreamly.port = 444;
         this.xstreamly = new XStreamly('1183738a-fa9b-4f83-8594-407fa27c2e7b', '2176a6e7-cfe6-4e63-bee5-41d30739c438');
         this.channel = this.xstreamly.subscribe((currentEnvironment + '-' + channelName), {
+            userId:currentUserName,
             userInfo: {
                 name: currentUserName,
                 profilePic: currentUserPic
@@ -543,7 +544,7 @@ var NurphSocket = {
     removeParticipant: function(participant) {
         $("#participant-" + participant.id).remove();
         $('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
-        if (NurphSocket.isAuthoritiveClient()) {
+        if (NurphSocket.isAuthoritiveClient() && participant.memberInfo.name !== currentUserName) {
             //only send notifications for users that are logged in
             if (participant.memberInfo.name) {
                 NurphSocket.send({
