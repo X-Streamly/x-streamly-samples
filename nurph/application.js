@@ -617,6 +617,11 @@ var NurphSocket = {
         }
     },
     postToNurphServer: function(message) {
+        delete message['position'];
+        message.nurph_creation_time = message.created_at;
+        delete message['created_at'];
+        message.nurph_type = message.type;
+        delete message['type'];
         $.post(this.url + this.channelName + '/messages', { message: message }, function() {
             log('done sending message to nurph');
         }, "json");
