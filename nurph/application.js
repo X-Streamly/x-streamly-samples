@@ -82,6 +82,9 @@ jQuery(function() {
     $("#new_message").submit(function(event) {
         var form = this,
             $form = $(form);
+        // Note for BW
+        url = $form.attr("action"),
+		data = $form.serializeArray();
 
         var messageInput = $("#message_content");
         // TODO: ?
@@ -97,6 +100,8 @@ jQuery(function() {
 
         messageInput.val("");
 
+        // Note for BW
+        $.post(url, data, function() { }, "json");
         NurphSocket.send(message);
 
         return false;
@@ -265,9 +270,11 @@ Message.prototype.parse = function() {
             this.content = this.text;
             this.display_name = this.screenname;
             this.avatar = this.profile_pic;
-            // Update the 'latest tweet' box
-            // TODO: do it when "after_publish.message" event is fired
-            jQuery('#channel_title p').html(this.content);
+            // TODO: Do this when "after_publish.message" event is fired.
+            // TODO: Update the 'status' that is pulled from the DB on page load.
+            if (this.display_name == NurphSocket.channelName && this.content.charAt(0) != '@') {
+                jQuery('#channel_title p').html(this.content);
+            };
             break;
     }
     this.formatContent();
@@ -421,15 +428,19 @@ var NurphSocket = {
         $(window).bind('beforeunload', function() {
             try {
                 if (NurphSocket.channel.presenceChannel.members.count === 1) {
-                    //we are the only one in the channel so we should send a message that we are leaving
-                    NurphSocket.send({
-                        content: "has left the channel",
-                        type: 'event',
-                        generated_by: {
-                            display_name: currentUserName
-                        },
-                        created_at: new Date()
-                    });
+                    var me = NurphSocket.channel.presenceChannel.members.get(currentUserName);
+
+                    if (me.recordCount === 1) {
+                        //we are the only one in the channel so we should send a message that we are leaving
+                        NurphSocket.send({
+                            content: "has left the channel",
+                            type: 'event',
+                            generated_by: {
+                                display_name: currentUserName
+                            },
+                            created_at: new Date()
+                        });
+                    }
                 }
             }
             catch (ex) {
@@ -471,9 +482,15 @@ var NurphSocket = {
         });
 
         this.channel.bind('xstreamly:subscription_succeeded', function(members) {
-            members.each(NurphSocket.addParticipant);
+            var firstTimeForMe = true;
+            members.each(function(member) {
+                if (member.id === currentUserName) {
+                    firstTimeForMe = (member.recordCount === 1);
+                }
+                NurphSocket.addParticipant(member);
+            });
             //only send notification for users that are logged in
-            if (currentUserName) {
+            if (currentUserName && firstTimeForMe) {
                 NurphSocket.send({
                     content: "has entered the channel",
                     type: 'event',
@@ -525,10 +542,11 @@ var NurphSocket = {
 
         if (name) {
             data = '<a href="http://twitter.com/' + name + '" title="' + name + '"><img alt="' + name + '" height="20" src="' + pic + '" width="20" /></a>' +
-            '<a href="http://twitter.com/' + name + '" class="brash">' + name + '</a>';
+            '<a href="http://twitter.com/' + name + '" class="brash twitter-anywhere-user">' + name + '</a>';
         }
         else {
-            data = 'Anonymous'
+            data = '<img alt="Anonymous" height="20" src="/images/anonymous_20px.png" width="20" />' +
+            '<span class="anonymous">Anonymous</span>';
         }
 
         if ($('#participant-' + participant.id).length === 0) {
@@ -606,25 +624,6 @@ var NurphSocket = {
         //put messages from me straight in the DOM
         insert_messages(message);
         this.channel.trigger(message.type, message, true);
-
-        try {
-            if (message.type === "remark") {
-                this.postToNurphServer(message);
-            }
-        }
-        catch (ex) {
-            log('could not write to NURPH');
-        }
-    },
-    postToNurphServer: function(message) {
-        delete message['position'];
-        message.nurph_creation_time = message.created_at;
-        delete message['created_at'];
-        message.nurph_type = message.type;
-        delete message['type'];
-        $.post(this.url + this.channelName + '/messages', { message: message }, function() {
-            log('done sending message to nurph');
-        }, "json");
     },
     disconnect: function() {
         log("Shutting down the socket");
