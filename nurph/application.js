@@ -84,7 +84,7 @@ jQuery(function() {
             $form = $(form);
         // Note for BW
         url = $form.attr("action"),
-		data = $form.serializeArray();
+data = $form.serializeArray();
 
         var messageInput = $("#message_content");
         // TODO: ?
@@ -396,16 +396,6 @@ var internal_template = jQuery.template(
     '</tr>'
 );
 
-function userLoggedOn(T) {
-    console.log('T is connected')
-    currentUserName = T.currentUser.data('screen_name');
-    currentUserPic = T.currentUser.data('profile_image_url');
-    console.log(currentUserName + ' ' + currentUserPic);
-    if (NurphSocket.channel) {
-        NurphSocket.channel.memberInfo({ name: currentUserName, profilePic: currentUserPic });
-    }
-}
-
 var NurphSocket = {
     url: '',
     channelName: '',
@@ -518,6 +508,10 @@ var NurphSocket = {
             //we want to save all the inital messages
             //so they can be layed out correctly.
             if (loaded) {
+                if (remark.source && remark.source.indexOf('Nurph') >= 0) {
+                    //don't double publish remarks from nurph
+                    return;
+                }
                 insert_messages(remark);
             } else {
                 var take = true;
