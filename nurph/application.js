@@ -533,7 +533,7 @@ var NurphSocket = {
                 var take = true;
                 if (remark.created_at) {
                     remark.createdTime = new Date(remark.created_at);
-                    take = (new Date()).getTime() - remark.createdTime.getTime() < 100 * 60 * 1000;
+                    take = (new Date()).getTime() - remark.createdTime.getTime() < 10 * 60 * 1000;
                 }
 
                 if (take) {
