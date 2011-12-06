@@ -448,6 +448,7 @@ var NurphSocket = {
         var loaded = false;
         var initialMessages = [];
         this.xstreamly = new XStreamly('1183738a-fa9b-4f83-8594-407fa27c2e7b', '2176a6e7-cfe6-4e63-bee5-41d30739c438');
+        var startingConnectTime = (new Date()).getTime();
         this.channel = this.xstreamly.subscribe((currentEnvironment + '-' + channelName), {
             userId: currentUserName,
             userInfo: {
@@ -464,8 +465,8 @@ var NurphSocket = {
 
                 insert_messages(initialMessages);
                 initialMessages= [];
-
-								NurphSocket.addNurphBot();
+                NurphSocket.addNurphBot();
+                XStreamly.log('took '+((new Date()).getTime()-startingConnectTime)+ 'ms to load messages');
             }
         });
 
