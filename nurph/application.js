@@ -82,9 +82,8 @@ jQuery(function() {
     $("#new_message").submit(function(event) {
         var form = this,
             $form = $(form);
-        // Note for BW
-        url = $form.attr("action"),
-data = $form.serializeArray();
+        		url = $form.attr("action"),
+						data = $form.serializeArray();
 
         var messageInput = $("#message_content");
         // TODO: ?
@@ -100,7 +99,6 @@ data = $form.serializeArray();
 
         messageInput.val("");
 
-        // Note for BW
         $.post(url, data, function() { }, "json");
         NurphSocket.send(message);
 
@@ -443,9 +441,9 @@ var NurphSocket = {
         // Set twitter-anywhere-user classes to Twitter links, and update the document title.
         // TODO: don't run it every 0.5s - set the class manually instead
         /*setInterval(function() {
-        update_document_title_if_idle();
-        jQuery("a[href^=http://twitter.com/]").not(".twitter-anywhere-user").not(".no-twitter-hovercard").addClass("twitter-anywhere-user");
-        }, 500);*/
+					update_document_title_if_idle();
+					jQuery("a[href^=http://twitter.com/]").not(".twitter-anywhere-user").not(".no-twitter-hovercard").addClass("twitter-anywhere-user");
+				}, 500);*/
 
         var loaded = false;
         var initialMessages = [];
@@ -459,13 +457,15 @@ var NurphSocket = {
             includePersistedMessages: true,
             subscriptionLoaded: function() {
                 loaded = true;
-                 
+
                 initialMessages.sort(function(a, b) {
                     return a.createdTime.getTime() - b.createdTime.getTime();
                 });
-                
+
                 insert_messages(initialMessages);
                 initialMessages= [];
+
+								NurphSocket.addNurphBot();
             }
         });
 
@@ -515,7 +515,7 @@ var NurphSocket = {
             } else {
                 recievedMessages[key] = true;
             }
-            
+
             if(remark.nurphId && NurphSocket.sentMessages[remark.nurphId]) {
                 return;
             }
@@ -547,7 +547,7 @@ var NurphSocket = {
         var name = participant.memberInfo.name;
         var pic = participant.memberInfo.profilePic;
         NurphSocket.knownMembers[name] = true;
-        $('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
+				NurphSocket.updateParticipantCounter();
 
         var data;
 
@@ -576,7 +576,7 @@ var NurphSocket = {
     removeParticipant: function(participant) {
         delete NurphSocket.knownMembers[name];
         $("#participant-" + participant.id).remove();
-        $('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
+        NurphSocket.updateParticipantCounter();
         if (NurphSocket.isAuthoritiveClient() && participant.memberInfo.name !== currentUserName) {
             //only send notifications for users that are logged in
             if (participant.memberInfo.name) {
@@ -591,6 +591,20 @@ var NurphSocket = {
             }
         }
     },
+		updateParticipantCounter: function() {
+		  if (NurphSocket.channelName == "Nurph") {
+		    $('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count + 1);
+		  } else {
+		    $('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
+		  }
+		},
+		addNurphBot: function() {
+		  // TODO: @Nurph's presence in #Nurph is hard coded but really needs to
+		  // be handled by a live connection.
+		  if (NurphSocket.channelName == "Nurph" && $('#participant-Nurph').length === 0) {
+		    $('#channel_contributors').append($('<li class="participant" id="participant-Nurph"><a title="Nurph" href="http://twitter.com/Nurph"><img width="20" height="20" src="http://a1.twimg.com/profile_images/1450887565/AZO_glow_normal.png" alt="Nurph"></a><a class="brash twitter-anywhere-user" href="http://twitter.com/Nurph">Nurph</a></li>'));
+		  }
+		},
     //we want to only publish shared events (like out side tweets and enter exit messgages)
     //once so we nee to pick one client in the room to do it. The method is to pick
     //the client with the lowest member ID
@@ -637,7 +651,7 @@ var NurphSocket = {
         message.nurphId = NurphSocket.genareteNurphId();
         NurphSocket.sentMessages[message.nurphId]=true;
         this.channel.trigger(message.type, message, true);
-        
+
         if (message.type !== 'event' || message.generated_by.display_name !== currentUserName) {
             insert_messages(message);
         }
