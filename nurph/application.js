@@ -403,6 +403,8 @@ var NurphSocket = {
     user_id: false,
     xstreamly: null,
     channel: null,
+    knownMembers: {},
+    sentMessages: {},
     initialize: function(url, channelName, channel_id, user_id) {
         if (document.location.hash == '#debug') {
             this.showDebug();
@@ -447,7 +449,6 @@ var NurphSocket = {
 
         var loaded = false;
         var initialMessages = [];
-        //XStreamly.port = 444;
         this.xstreamly = new XStreamly('1183738a-fa9b-4f83-8594-407fa27c2e7b', '2176a6e7-cfe6-4e63-bee5-41d30739c438');
         this.channel = this.xstreamly.subscribe((currentEnvironment + '-' + channelName), {
             userId: currentUserName,
@@ -458,11 +459,13 @@ var NurphSocket = {
             includePersistedMessages: true,
             subscriptionLoaded: function() {
                 loaded = true;
+                 
                 initialMessages.sort(function(a, b) {
-                    new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+                    return a.createdTime.getTime() - b.createdTime.getTime();
                 });
-
+                
                 insert_messages(initialMessages);
+                initialMessages= [];
             }
         });
 
@@ -496,12 +499,24 @@ var NurphSocket = {
         this.channel.bind('xstreamly:member_removed', this.removeParticipant);
         this.channel.bind('xstreamly:member_modified', this.participantModified);
 
-        this.channel.bind_all(function(eventType, remark) {
+        var recievedMessages = {};
+
+        this.channel.bind_all(function(eventType, remark, key) {
             if (eventType === 'tweet') {
                 remark.type = 'tweet';
             }
 
             if (!remark.type) {
+                return;
+            }
+
+            if (recievedMessages[key]) {
+                return;
+            } else {
+                recievedMessages[key] = true;
+            }
+            
+            if(remark.nurphId && NurphSocket.sentMessages[remark.nurphId]) {
                 return;
             }
 
@@ -512,12 +527,13 @@ var NurphSocket = {
                     //don't double publish remarks from nurph
                     return;
                 }
+
                 insert_messages(remark);
             } else {
                 var take = true;
                 if (remark.created_at) {
-                    var createdTime = new Date(remark.created_at);
-                    take = (new Date()).getTime() - createdTime.getTime() < 10 * 60 * 1000;
+                    remark.createdTime = new Date(remark.created_at);
+                    take = (new Date()).getTime() - remark.createdTime.getTime() < 100 * 60 * 1000;
                 }
 
                 if (take) {
@@ -530,6 +546,7 @@ var NurphSocket = {
     addParticipant: function(participant) {
         var name = participant.memberInfo.name;
         var pic = participant.memberInfo.profilePic;
+        NurphSocket.knownMembers[name] = true;
         $('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
 
         var data;
@@ -557,6 +574,7 @@ var NurphSocket = {
             '<a href="http://twitter.com/' + name + '" class="brash">' + name + '</a>');
     },
     removeParticipant: function(participant) {
+        delete NurphSocket.knownMembers[name];
         $("#participant-" + participant.id).remove();
         $('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
         if (NurphSocket.isAuthoritiveClient() && participant.memberInfo.name !== currentUserName) {
@@ -616,13 +634,24 @@ var NurphSocket = {
     },
     send: function(message) {
         //put messages from me straight in the DOM
-        insert_messages(message);
+        message.nurphId = NurphSocket.genareteNurphId();
+        NurphSocket.sentMessages[message.nurphId]=true;
         this.channel.trigger(message.type, message, true);
+        
+        if (message.type !== 'event' || message.generated_by.display_name !== currentUserName) {
+            insert_messages(message);
+        }
     },
     disconnect: function() {
         log("Shutting down the socket");
         this.xstreamly.stop();
-    }
+    },
+    genareteNurphId: function() {
+        var S4 = function() {
+            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+        }
+        return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+    },
 };
 
 // Generic logging function
