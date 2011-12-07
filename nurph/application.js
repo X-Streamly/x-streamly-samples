@@ -39,13 +39,25 @@ jQuery(function() {
 
     var autocomplete = false;
     var resetAutocomplete = function() {
-        // Fetch all participant names
-        var data = jQuery('#participants_list ul li a').map(function() {
-            var name = jQuery(this).text();
-            if (name !== "" && name !== window.currentUserName) {
-                return '@' + name;
-            }
-        });
+				// TODO Find out where we're loading the usernames from
+				// on the page load. These are only being calculated
+				// once the resetAutomplete runs for the first time.
+				var data = [];
+				jQuery('#content_wrapper a.twitter-anywhere-user').each( function( i, el ) {
+				    var name = jQuery(el).text();
+				    if (jQuery.inArray('@'+name, data) === -1 && name !== "") {
+				      data.push('@'+name);
+				    }
+						data.sort(function(x,y){
+						      var a = String(x).toUpperCase();
+						      var b = String(y).toUpperCase();
+						      if (a > b)
+						         return 1
+						      if (a < b)
+						         return -1
+						      return 0;
+						    });
+				});
 
         var messageInput = jQuery("#message_content");
         if (data.length > 0) {
@@ -344,52 +356,59 @@ var user_template = jQuery.template(
 
 var tweet_template = jQuery.template(
     '<tr id="message_${id}" class="message-record tweet ${classNames} remark">' +
+    ' <td class="time">' +
+    ' <a target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">${time}</a>' +
+    ' </td>' +
     ' <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="20px" height="20px" src="${avatar}" /></a></td>' +
     ' <td class="message">' +
     ' <div class="readable">' +
     ' <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
     ' </div>' +
     ' </td>' +
-    ' <td class="time">' +
-    ' ${time}' +
+    ' <td class="options">' +
+    ' <a class="retweet" target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">Retweet</a>' +
     ' </td>' +
     '</tr>'
 );
 
 var event_template = jQuery.template(
     '<tr id="message_${id}" class="message-record ${classNames} event">' +
-    ' <td class="avatar"></td><td class="message"><div class="readable"><p>' +
-    ' <a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a> ${content}</p></div></td>' +
     ' <td class="time">' +
     ' ${time}' +
     ' </td>' +
+    ' <td class="avatar"></td><td class="message"><div class="readable"><p>' +
+    ' <a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a> ${content}</p></div></td>' +
+    ' <td class="options">'                                        +
+    ' </td>'                                                       +
     '</tr>'
 );
 
 var remark_template = jQuery.template(
     '<tr id="message_${id}" class="message-record ${classNames} remark">' +
+    ' <td class="time">' +
+    ' ${time}' +
+    ' </td>' +
     ' <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="22px" height="22px" src="${avatar}" /></a></td>' +
     ' <td class="message">' +
     ' <div class="readable">' +
     ' <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
     ' </div>' +
     ' </td>' +
-    ' <td class="time">' +
-    ' ${time}' +
+    ' <td class="options">' +
     ' </td>' +
     '</tr>'
 );
 
 var internal_template = jQuery.template(
     '<tr class="message-record ${classNames}">' +
+    ' <td class="time">' +
+    ' ${time}' +
+    ' </td>' +
     ' <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="22px" height="22px" src="${avatar}" /></a></td>' +
     ' <td class="message">' +
     ' <div class="readable">' +
     ' <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
     ' </div>' +
-    ' </td>' +
-    ' <td class="time">' +
-    ' ${time}' +
     ' </td>' +
     '</tr>'
 );
@@ -505,16 +524,17 @@ var NurphSocket = {
         this.channel.bind_all(function(eventType, remark, key) {
             if (eventType === 'tweet') {
                 remark.type = 'tweet';
+
                 if(remark.text.toLowerCase().indexOf(channelName.toLowerCase())===-1){
                     //tweet doesn't bellong to this channel
                     return;
                 }
-                if(loaded && remark.source && remark.source.toLowerCase().indexOf('nurph')>=0){
+                if(remark.source && remark.source.toLowerCase().indexOf('nurph')>=0){
                     //do not show Nurph tweets
                     return;
                 }
-            }
 
+            }
 
             if (!remark.type) {
                 return;
@@ -661,7 +681,8 @@ var NurphSocket = {
         message.nurphId = NurphSocket.genareteNurphId();
         NurphSocket.sentMessages[message.nurphId]=true;
         this.channel.trigger(message.type, message, true);
-        insert_messages(message);
+
+				insert_messages(message);
     },
     disconnect: function() {
         log("Shutting down the socket");
