@@ -509,6 +509,10 @@ var NurphSocket = {
                     //tweet doesn't bellong to this channel
                     return;
                 }
+                if(loaded && remark.source && remark.source.toLowerCase().indexOf('nurph')>=0){
+                    //do not show Nurph tweets
+                    return;
+                }
             }
 
 
