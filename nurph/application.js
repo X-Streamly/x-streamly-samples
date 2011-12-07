@@ -505,7 +505,12 @@ var NurphSocket = {
         this.channel.bind_all(function(eventType, remark, key) {
             if (eventType === 'tweet') {
                 remark.type = 'tweet';
+                if(remark.text.toLowerCase().indexOf(channelName.toLowerCase())===-1){
+                    //tweet doesn't bellong to this channel
+                    return;
+                }
             }
+
 
             if (!remark.type) {
                 return;
@@ -652,10 +657,7 @@ var NurphSocket = {
         message.nurphId = NurphSocket.genareteNurphId();
         NurphSocket.sentMessages[message.nurphId]=true;
         this.channel.trigger(message.type, message, true);
-
-        if (message.type !== 'event' || message.generated_by.display_name !== currentUserName) {
-            insert_messages(message);
-        }
+        insert_messages(message);
     },
     disconnect: function() {
         log("Shutting down the socket");
