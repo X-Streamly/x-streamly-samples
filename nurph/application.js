@@ -356,52 +356,59 @@ var user_template = jQuery.template(
 
 var tweet_template = jQuery.template(
     '<tr id="message_${id}" class="message-record tweet ${classNames} remark">' +
+    ' <td class="time">' +
+    ' <a target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">${time}</a>' +
+    ' </td>' +
     ' <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="20px" height="20px" src="${avatar}" /></a></td>' +
     ' <td class="message">' +
     ' <div class="readable">' +
     ' <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
     ' </div>' +
     ' </td>' +
-    ' <td class="time">' +
-    ' <a target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">${time}</a>' +
+    ' <td class="options">' +
+    ' <a class="retweet" target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">Retweet</a>' +
     ' </td>' +
     '</tr>'
 );
 
 var event_template = jQuery.template(
     '<tr id="message_${id}" class="message-record ${classNames} event">' +
-    ' <td class="avatar"></td><td class="message"><div class="readable"><p>' +
-    ' <a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a> ${content}</p></div></td>' +
     ' <td class="time">' +
     ' ${time}' +
     ' </td>' +
+    ' <td class="avatar"></td><td class="message"><div class="readable"><p>' +
+    ' <a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a> ${content}</p></div></td>' +
+    ' <td class="options">'                                        +
+    ' </td>'                                                       +
     '</tr>'
 );
 
 var remark_template = jQuery.template(
     '<tr id="message_${id}" class="message-record ${classNames} remark">' +
+    ' <td class="time">' +
+    ' ${time}' +
+    ' </td>' +
     ' <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="22px" height="22px" src="${avatar}" /></a></td>' +
     ' <td class="message">' +
     ' <div class="readable">' +
     ' <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
     ' </div>' +
     ' </td>' +
-    ' <td class="time">' +
-    ' ${time}' +
+    ' <td class="options">' +
     ' </td>' +
     '</tr>'
 );
 
 var internal_template = jQuery.template(
     '<tr class="message-record ${classNames}">' +
+    ' <td class="time">' +
+    ' ${time}' +
+    ' </td>' +
     ' <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="22px" height="22px" src="${avatar}" /></a></td>' +
     ' <td class="message">' +
     ' <div class="readable">' +
     ' <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
     ' </div>' +
-    ' </td>' +
-    ' <td class="time">' +
-    ' ${time}' +
     ' </td>' +
     '</tr>'
 );
