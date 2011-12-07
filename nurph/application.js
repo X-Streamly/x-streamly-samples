@@ -363,7 +363,7 @@ var tweet_template = jQuery.template(
     ' </div>' +
     ' </td>' +
     ' <td class="time">' +
-    ' ${time}' +
+    ' <a target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">${time}</a>' +
     ' </td>' +
     '</tr>'
 );
