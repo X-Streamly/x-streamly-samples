@@ -39,13 +39,25 @@ jQuery(function() {
 
     var autocomplete = false;
     var resetAutocomplete = function() {
-        // Fetch all participant names
-        var data = jQuery('#participants_list ul li a').map(function() {
-            var name = jQuery(this).text();
-            if (name !== "" && name !== window.currentUserName) {
-                return '@' + name;
-            }
-        });
+				// TODO Find out where we're loading the usernames from
+				// on the page load. These are only being calculated
+				// once the resetAutomplete runs for the first time.
+				var data = [];
+				jQuery('#content_wrapper a.twitter-anywhere-user').each( function( i, el ) {
+				    var name = jQuery(el).text();
+				    if (jQuery.inArray('@'+name, data) === -1 && name !== "") {
+				      data.push('@'+name);
+				    }
+						data.sort(function(x,y){
+						      var a = String(x).toUpperCase();
+						      var b = String(y).toUpperCase();
+						      if (a > b)
+						         return 1
+						      if (a < b)
+						         return -1
+						      return 0;
+						    });
+				});
 
         var messageInput = jQuery("#message_content");
         if (data.length > 0) {
@@ -505,12 +517,11 @@ var NurphSocket = {
         this.channel.bind_all(function(eventType, remark, key) {
             if (eventType === 'tweet') {
                 remark.type = 'tweet';
-                if(remark.text.toLowerCase().indexOf(channelName.toLowerCase())===-1){
-                    //tweet doesn't bellong to this channel
-                    return;
-                }
+								if(remark.text.toLowerCase().indexOf(channelName.toLowerCase())===-1) {
+								  // tweet doesn't belong to this channel
+								  return;
+								}
             }
-
 
             if (!remark.type) {
                 return;
@@ -657,7 +668,8 @@ var NurphSocket = {
         message.nurphId = NurphSocket.genareteNurphId();
         NurphSocket.sentMessages[message.nurphId]=true;
         this.channel.trigger(message.type, message, true);
-        insert_messages(message);
+
+				insert_messages(message);
     },
     disconnect: function() {
         log("Shutting down the socket");
