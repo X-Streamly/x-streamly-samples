@@ -524,16 +524,10 @@ var NurphSocket = {
         this.channel.bind_all(function(eventType, remark, key) {
             if (eventType === 'tweet') {
                 remark.type = 'tweet';
-
-                if(remark.text.toLowerCase().indexOf(channelName.toLowerCase())===-1){
-                    //tweet doesn't bellong to this channel
-                    return;
-                }
-                if(remark.source && remark.source.toLowerCase().indexOf('nurph')>=0){
-                    //do not show Nurph tweets
-                    return;
-                }
-
+								if(remark.text.toLowerCase().indexOf(channelName.toLowerCase())===-1) {
+								  // tweet doesn't belong to this channel
+								  return;
+								}
             }
 
             if (!remark.type) {
@@ -549,15 +543,15 @@ var NurphSocket = {
             if(remark.nurphId && NurphSocket.sentMessages[remark.nurphId]) {
                 return;
             }
+            
+            if (remark.source && remark.source.indexOf('Nurph') >= 0) {
+                //don't double publish remarks from nurph
+                return;
+            }
 
             //we want to save all the inital messages
             //so they can be layed out correctly.
             if (loaded) {
-                if (remark.source && remark.source.indexOf('Nurph') >= 0) {
-                    //don't double publish remarks from nurph
-                    return;
-                }
-
                 insert_messages(remark);
             } else {
                 var take = true;
