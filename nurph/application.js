@@ -18,7 +18,7 @@ function retweetMe(tweet_id) {
 	var data = {
 		tweet_id: tweet_id,
 		}
-  $.post("/messages", data, function() { }, "json");
+  $.get("/messages", data, function() { }, "json");
 };
 
 function countChar(val) {
@@ -393,7 +393,7 @@ var tweet_template = jQuery.template(
     ' <td class="options">' +
     ' <a class="reply" href="#" title="${display_name}" onClick="in_reply_to(${tweetid}, this.title)">Reply</a>' +
     ' <a class="retweet" target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">Retweet</a>' +
-    //TODO Use this once retweets are working: ' <a class="retweet" title="Retweet Me" onClick="retweetMe(${tweetid})">Retweet</a>' +
+    ' <a class="retweet hide_this" title="Retweet Me" onClick="retweetMe(${tweetid})">Retweet</a>' +
     ' </td>' +
     '</tr>'
 );
