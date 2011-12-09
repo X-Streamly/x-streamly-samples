@@ -22,6 +22,15 @@ function retweetMe(tweet_id) {
 	$("tweet_"+tweet_id).effect("highlight", {}, 3000);
 };
 
+function manualRetweet(tweetid) {
+	var tweet = jQuery("#tweet_"+tweetid+" p").text().replace(/:/, "");
+	var el = jQuery("#message_content");
+	if (el) {
+		el.focus();
+		el.val('RT @' + tweet);
+	}
+};
+
 function countChar(val) {
 	// TODO Set the appropriate count on page load.
 	// and remove the Ruby version in the channels/show template.
@@ -393,8 +402,10 @@ var tweet_template = jQuery.template(
     ' </td>' +
     ' <td class="options">' +
     ' <a class="reply" href="#" title="${display_name}" onClick="in_reply_to(${tweetid}, this.title)">Reply</a>' +
+    ' <a class="rt" href="#" title="${tweetid}" onClick="manualRetweet(this.title)">RT</a>' +
     ' <a class="retweet" target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">Retweet</a>' +
-    ' <a class="retweet hide_this" title="Retweet Me" onClick="retweetMe(${tweetid})">Retweet</a>' +
+    // TODO This needs a visual confirmation before we can unhide it.
+		' <a class="retweet hide_this" title="Retweet Me" onClick="retweetMe(${tweetid})">Retweet</a>' +
     ' </td>' +
     '</tr>'
 );
