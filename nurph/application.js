@@ -22,7 +22,8 @@ function countChar(val) {
 	$('#message_counter').text(140 - len - appendage);
 };
 
-function in_reply_to(display_name) {
+function in_reply_to(tweet_id, display_name) {
+	jQuery("#message_in_reply_to_tweet_id").val(tweet_id);
 	var el = jQuery("#message_content");
 	if (el) {
 		el.focus();
@@ -383,7 +384,7 @@ var tweet_template = jQuery.template(
     ' </div>' +
     ' </td>' +
     ' <td class="options">' +
-    ' <a class="reply" href="#" title="${display_name}" onClick="in_reply_to(this.title)">Reply</a>' +
+    ' <a class="reply" href="#" title="${display_name}" onClick="in_reply_to(${tweetid}, this.title)">Reply</a>' +
     ' <a class="retweet" target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">Retweet</a>' +
     ' </td>' +
     '</tr>'
@@ -413,7 +414,8 @@ var remark_template = jQuery.template(
     ' </div>' +
     ' </td>' +
     ' <td class="options">' +
-    ' <a class="reply" href="#" title="${display_name}" onClick="in_reply_to(this.title)">Reply</a>' +
+		// TODO We need to obtain a tweetid instead of the this.id.
+    ' <a class="reply" href="#" title="${display_name}" onClick="in_reply_to(this.id, this.title)">Reply</a>' +
     ' <a class="retweet" href="#">Retweet</a>' +
     ' </td>' +
     '</tr>'
