@@ -18,7 +18,8 @@ function retweetMe(tweet_id) {
 	var data = {
 		tweet_id: tweet_id,
 		}
-  $.get("/messages", data, function() { }, "json");
+  $.get("/channels/"+NurphSocket.channelName+"/messages/retweet", data, function() { }, "json");
+	$("tweet_"+tweet_id).effect("highlight", {}, 3000);
 };
 
 function countChar(val) {
@@ -380,7 +381,7 @@ var user_template = jQuery.template(
 );
 
 var tweet_template = jQuery.template(
-    '<tr id="message_${id}" class="message-record tweet ${classNames} remark">' +
+    '<tr id="tweet_${tweetid}" class="message-record tweet ${classNames} remark">' +
     ' <td class="time">' +
     ' <a target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">${time}</a>' +
     ' </td>' +
