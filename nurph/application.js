@@ -14,6 +14,23 @@ if (typeof soundManager !== "undefined") {
     };
 }
 
+function countChar(val) {
+	// TODO Set the appropriate count on page load.
+	// and remove the Ruby version in the channels/show template.
+	var len = val.value.length;
+	var appendage = ("#".length + NurphSocket.channelName.length + " in http://Nurph.com/".length + NurphSocket.channelName.length);
+	$('#message_counter').text(140 - len - appendage);
+};
+
+function in_reply_to(display_name) {
+	var el = jQuery("#message_content");
+	if (el) {
+		el.focus();
+		el_old_text = el.val();
+		el.val('@' + display_name + ' ' + el_old_text);
+	}
+};
+
 jQuery(function() {
     // Automatic updates (evil)
     if (jQuery('.update_me_automatically').length > 0) {
@@ -366,6 +383,7 @@ var tweet_template = jQuery.template(
     ' </div>' +
     ' </td>' +
     ' <td class="options">' +
+    ' <a class="reply" href="#" title="${display_name}" onClick="in_reply_to(this.title)">Reply</a>' +
     ' <a class="retweet" target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">Retweet</a>' +
     ' </td>' +
     '</tr>'
@@ -395,6 +413,8 @@ var remark_template = jQuery.template(
     ' </div>' +
     ' </td>' +
     ' <td class="options">' +
+    ' <a class="reply" href="#" title="${display_name}" onClick="in_reply_to(this.title)">Reply</a>' +
+    ' <a class="retweet" href="#">Retweet</a>' +
     ' </td>' +
     '</tr>'
 );
@@ -543,7 +563,7 @@ var NurphSocket = {
             if(remark.nurphId && NurphSocket.sentMessages[remark.nurphId]) {
                 return;
             }
-            
+
             if (remark.source && remark.source.indexOf('Nurph') >= 0) {
                 //don't double publish remarks from nurph
                 return;
@@ -717,7 +737,7 @@ var resizeChatLayout = function() {
     if (chat) chat.scrollTop = chat.scrollHeight;
 
     jQuery("body:not(.iphone) #front").css("height", jQuery("#content").height());
-    jQuery("body:not(.iphone) #channel_contributors").css("height", jQuery("#content").height() - 167);
+    jQuery("body:not(.iphone) #channel_contributors").css("height", jQuery("#content").height() - 177);
 };
 
 var resizeParticipants = function() {
