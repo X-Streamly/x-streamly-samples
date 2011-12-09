@@ -14,6 +14,13 @@ if (typeof soundManager !== "undefined") {
     };
 }
 
+function retweetMe(tweet_id) {
+	var data = {
+		tweet_id: tweet_id,
+		}
+  $.post("/messages", data, function() { }, "json");
+};
+
 function countChar(val) {
 	// TODO Set the appropriate count on page load.
 	// and remove the Ruby version in the channels/show template.
@@ -386,6 +393,7 @@ var tweet_template = jQuery.template(
     ' <td class="options">' +
     ' <a class="reply" href="#" title="${display_name}" onClick="in_reply_to(${tweetid}, this.title)">Reply</a>' +
     ' <a class="retweet" target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">Retweet</a>' +
+    //TODO Use this once retweets are working: ' <a class="retweet" title="Retweet Me" onClick="retweetMe(${tweetid})">Retweet</a>' +
     ' </td>' +
     '</tr>'
 );
@@ -416,7 +424,7 @@ var remark_template = jQuery.template(
     ' <td class="options">' +
 		// TODO We need to obtain a tweetid instead of the this.id.
     ' <a class="reply" href="#" title="${display_name}" onClick="in_reply_to(this.id, this.title)">Reply</a>' +
-    ' <a class="retweet" href="#">Retweet</a>' +
+    // TODO this won't work until we have the matching tweet ID' <a class="retweet" href="#">Retweet</a>' +
     ' </td>' +
     '</tr>'
 );
