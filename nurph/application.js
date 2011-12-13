@@ -322,6 +322,12 @@ Message.prototype.parse = function() {
             };
             break;
     }
+    this.content = this.content.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    this.display_name = this.display_name.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    if(this.avatar){
+        this.avatar = this.avatar.replace(/<Script>/g,'');
+    }
+    
     this.formatContent();
 
     // Mark message as a response if it contains current user name
