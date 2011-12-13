@@ -566,10 +566,10 @@ var NurphSocket = {
         this.channel.bind_all(function(eventType, remark, key) {
             if (eventType === 'tweet') {
                 remark.type = 'tweet';
-								if(remark.text.toLowerCase().indexOf(channelName.toLowerCase())===-1) {
-								  // tweet doesn't belong to this channel
-								  return;
-								}
+				if(remark.text && remark.text.toLowerCase().indexOf(channelName.toLowerCase())===-1) {
+				  // tweet doesn't belong to this channel
+				  return;
+				}
             }
 
             if (!remark.type) {
@@ -585,10 +585,16 @@ var NurphSocket = {
             if(remark.nurphId && NurphSocket.sentMessages[remark.nurphId]) {
                 return;
             }
+            
+            if(eventType==remark){
+                return;
+            }
 
             if (remark.source && remark.source.indexOf('Nurph') >= 0) {
                 //don't double publish remarks from nurph
-                return;
+                remark.type = 'remark';
+                remark.sender = {display_name:remark.ScreenName,avatar_url:remark.profile_pic}
+                remark.content = remark.text;
             }
 
             //we want to save all the inital messages
@@ -716,9 +722,8 @@ var NurphSocket = {
         //put messages from me straight in the DOM
         message.nurphId = NurphSocket.genareteNurphId();
         NurphSocket.sentMessages[message.nurphId]=true;
-        this.channel.trigger(message.type, message, true);
-
-				insert_messages(message);
+        //this.channel.trigger(message.type, message, true);
+        insert_messages(message);
     },
     disconnect: function() {
         log("Shutting down the socket");
