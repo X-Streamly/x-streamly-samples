@@ -36,7 +36,9 @@ function countChar(val) {
 	// and remove the Ruby version in the channels/show template.
 	var len = val.value.length;
 	var appendage = ("#".length + NurphSocket.channelName.length + " in http://Nurph.com/".length + NurphSocket.channelName.length);
-	$('#message_counter').text(140 - len - appendage);
+	var lengthLeft = 140 - len - appendage;
+	$('#message_counter').text(lengthLeft);
+	return lengthLeft;
 };
 
 function in_reply_to(tweet_id, display_name) {
@@ -133,6 +135,13 @@ jQuery(function() {
 						data = $form.serializeArray();
 
         var messageInput = $("#message_content");
+        
+        //limit the total tweet length to 140
+        if(countChar({value:messageInput.val()})<0){
+            alert('Sorry, your message it to long, plese use less vowels and try again');
+            return false;
+        }
+        
         // TODO: ?
         if (messageInput.val()[0] === "/") {
             messageInput.val("");
@@ -597,10 +606,17 @@ var NurphSocket = {
             }
 
             if (remark.source && remark.source.indexOf('Nurph') >= 0) {
-                //don't double publish remarks from nurph
+                //make tweets look diffrent so you can tell they came from nurph
                 remark.type = 'remark';
                 remark.sender = {display_name:remark.ScreenName,avatar_url:remark.profile_pic}
                 remark.content = remark.text;
+                
+                //we want to show your old tweets but we already inserted your tweets dirrectly into
+                //the DOM so we don't want to show them when we get them back from twitter
+                //as well
+                if(loaded && remark.ScreenName === currentUserName){
+                    return;
+                }
             }
 
             //we want to save all the inital messages
