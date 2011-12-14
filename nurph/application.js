@@ -42,7 +42,7 @@ function countChar(val) {
 };
 
 function in_reply_to(tweet_id, display_name) {
-	jQuery("#message_in_reply_to_tweet_id").val(tweet_id);
+	jQuery("#message_in_reply_to_id").val(tweet_id);
 	var el = jQuery("#message_content");
 	if (el) {
 		el.focus();
@@ -179,7 +179,7 @@ jQuery(function() {
     }, 5 * 1000);
 
     // Set sounds on or off
-    jQuery("#sounds").click(function() {
+    jQuery("#user_sounds_enabled").click(function() {
         var self = jQuery(this);
         jQuery.post(self.attr("rel"), {
             enabled: self.attr("checked")
@@ -336,7 +336,7 @@ Message.prototype.parse = function() {
     if(this.avatar){
         this.avatar = this.avatar.replace(/<Script>/g,'');
     }
-    
+
     this.formatContent();
 
     // Mark message as a response if it contains current user name
@@ -385,7 +385,7 @@ Message.prototype.append = function() {
     // Play sound if message was posted by other user
     if (this.display_name !== window.currentUserName) {
         window.new_message_count += 1;
-        var playSound = jQuery("#sounds").attr("checked");
+        var playSound = jQuery("#user_sounds_enabled").attr("checked");
         try {
             if (this.type === "remark" && playSound) {
                 soundManager.play("click");
@@ -449,9 +449,12 @@ var remark_template = jQuery.template(
     ' </div>' +
     ' </td>' +
     ' <td class="options">' +
-		// TODO We need to obtain a tweetid instead of the this.id.
+    // TODO This needs tweetID instead of the this.id.
     ' <a class="reply" href="#" title="${display_name}" onClick="in_reply_to(this.id, this.title)">Reply</a>' +
-    // TODO this won't work until we have the matching tweet ID' <a class="retweet" href="#">Retweet</a>' +
+    // TODO This also needs a tweetID
+    ' <a class="rt" href="#" title="${id}" onClick="manualRetweet(this.title)">RT</a>' +
+    // TODO This also needs a tweetID before it will work
+    //' <a class="retweet" href="#">Retweet</a>' +
     ' </td>' +
     '</tr>'
 );
@@ -600,7 +603,7 @@ var NurphSocket = {
             if(remark.nurphId && NurphSocket.sentMessages[remark.nurphId]) {
                 return;
             }
-            
+
             if(eventType==remark){
                 return;
             }
