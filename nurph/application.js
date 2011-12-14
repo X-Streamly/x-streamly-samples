@@ -154,7 +154,6 @@ jQuery(function() {
         message.created_at = new Date();
 
         messageInput.val("");
-
         $.post(url, data, function() { }, "json");
         NurphSocket.send(message);
 
@@ -314,6 +313,10 @@ Message.prototype.parse = function() {
             this.template = remark_template;
             this.display_name = this.sender.display_name;
             this.avatar = this.sender.avatar_url;
+            if(!this.id){
+                //if we haven't found the tweet for this remark yet then use the nurp id
+                this.id = this.nurphId;
+            }
             break;
         case "event":
             this.template = event_template;
@@ -450,9 +453,9 @@ var remark_template = jQuery.template(
     ' </td>' +
     ' <td class="options">' +
     // TODO This needs tweetID instead of the this.id.
-    ' <a class="reply" href="#" title="${display_name}" onClick="in_reply_to(this.id, this.title)">Reply</a>' +
+    ' <a class="reply" href="#" title="${display_name}" style="display:${display};" onClick="in_reply_to(${id}, this.title)">Reply</a>' +
     // TODO This also needs a tweetID
-    ' <a class="rt" href="#" title="${id}" onClick="manualRetweet(this.title)">RT</a>' +
+    ' <a class="rt" href="#" title="${id}" style="display:${display};" onClick="manualRetweet(this.title)">RT</a>' +
     // TODO This also needs a tweetID before it will work
     //' <a class="retweet" href="#">Retweet</a>' +
     ' </td>' +
@@ -482,6 +485,8 @@ var NurphSocket = {
     channel: null,
     knownMembers: {},
     sentMessages: {},
+    remarksWaitingForTweets: [],
+    tweets: [],
     initialize: function(url, channelName, channel_id, user_id) {
         if (document.location.hash == '#debug') {
             this.showDebug();
@@ -586,6 +591,7 @@ var NurphSocket = {
                 remark.type = 'tweet';
 				if(remark.text && remark.text.toLowerCase().indexOf(channelName.toLowerCase())===-1) {
 				  // tweet doesn't belong to this channel
+				  XStreamly.log('skipping tweet that does not belong in channel');
 				  return;
 				}
             }
@@ -603,8 +609,14 @@ var NurphSocket = {
             if(remark.nurphId && NurphSocket.sentMessages[remark.nurphId]) {
                 return;
             }
+            
+            if(eventType === 'remark'){
+                NurphSocket.matchRemarksAndTweets(remark,null);
+                
+            }
 
             if (remark.source && remark.source.indexOf('Nurph') >= 0) {
+                NurphSocket.matchRemarksAndTweets(null,remark);
                 return;
                 
                 /*
@@ -630,7 +642,7 @@ var NurphSocket = {
                 var take = true;
                 if (remark.created_at) {
                     remark.createdTime = new Date(remark.created_at);
-                    take = (new Date()).getTime() - remark.createdTime.getTime() < 10 * 60 * 1000;
+                    ake = (new Date()).getTime() - remark.createdTime.getTime() < 10 * 60 * 1000;
                 }
 
                 if (take) {
@@ -639,6 +651,40 @@ var NurphSocket = {
             }
         });
 
+    },
+    matchRemarksAndTweets: function(remark,tweet){
+        if(remark){
+            remark.display = 'none';
+            $.each(NurphSocket.tweets,function(key,twt){
+                if(twt.screenname === remark.sender.display_name
+                    && twt.text.indexOf(remark.content)===0){
+                        NurphSocket.updateRemarkRowWithTweet(remark,twt);
+                        return;
+                    }
+            });
+            NurphSocket.remarksWaitingForTweets.push(remark);
+        } else{
+            $.each(NurphSocket.remarksWaitingForTweets,function(key,rmk){
+                if(tweet.screenname === rmk.sender.display_name
+                    && tweet.text.indexOf(rmk.content)===0){
+                        NurphSocket.updateRemarkRowWithTweet(rmk,tweet);
+                        return;
+                    }
+            });
+            NurphSocket.tweets.push(tweet);
+        }
+    },
+    updateRemarkRowWithTweet: function(remark,tweet){
+        remark.id = tweet.tweetid;
+        remark.display = 'display';
+        var row = $('#message_'+remark.nurphId);
+        $('#message_'+remark.nurphId+' a').show();
+        $('#message_'+remark.nurphId+' .reply').attr('onClick','').click(function(){
+            in_reply_to(tweet.tweetid,remark.sender.display_name);
+            return false;
+        });
+        $('#message_'+remark.nurphId+' .rt').attr('title',tweet.tweetid);
+        row.attr('id','message_'+tweet.tweetid);
     },
     addParticipant: function(participant) {
         var name = participant.memberInfo.name;
