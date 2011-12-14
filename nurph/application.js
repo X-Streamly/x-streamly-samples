@@ -609,6 +609,10 @@ var NurphSocket = {
             }
 
             if (remark.source && remark.source.indexOf('Nurph') >= 0) {
+                return;
+                
+                /*
+                this is for direct publishing of tweets
                 //make tweets look diffrent so you can tell they came from nurph
                 remark.type = 'remark';
                 remark.sender = {display_name:remark.ScreenName,avatar_url:remark.profile_pic}
@@ -619,7 +623,7 @@ var NurphSocket = {
                 //as well
                 if(loaded && remark.ScreenName === currentUserName){
                     return;
-                }
+                }*/
             }
 
             //we want to save all the inital messages
@@ -747,7 +751,7 @@ var NurphSocket = {
         //put messages from me straight in the DOM
         message.nurphId = NurphSocket.genareteNurphId();
         NurphSocket.sentMessages[message.nurphId]=true;
-        //this.channel.trigger(message.type, message, true);
+        this.channel.trigger(message.type, message, true);
         insert_messages(message);
     },
     disconnect: function() {
