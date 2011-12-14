@@ -35,7 +35,7 @@ function countChar(val) {
 	// TODO Set the appropriate count on page load.
 	// and remove the Ruby version in the channels/show template.
 	var len = val.value.length;
-	var appendage = ("#".length + NurphSocket.channelName.length + " in http://Nurph.com/".length + NurphSocket.channelName.length);
+	var appendage = ("#".length + NurphSocket.channelName.length);
 	var lengthLeft = 140 - len - appendage;
 	$('#message_counter').text(lengthLeft);
 	return lengthLeft;
@@ -135,13 +135,13 @@ jQuery(function() {
 						data = $form.serializeArray();
 
         var messageInput = $("#message_content");
-        
+
         //limit the total tweet length to 140
         if(countChar({value:messageInput.val()})<0){
             alert('Sorry, your message it to long, plese use less vowels and try again');
             return false;
         }
-        
+
         // TODO: ?
         if (messageInput.val()[0] === "/") {
             messageInput.val("");
@@ -421,9 +421,10 @@ var tweet_template = jQuery.template(
     ' <td class="options">' +
     ' <a class="reply" href="#" title="${display_name}" onClick="in_reply_to(${tweetid}, this.title)">Reply</a>' +
     ' <a class="rt" href="#" title="${tweetid}" onClick="manualRetweet(this.title)">RT</a>' +
-    ' <a class="retweet" target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">Retweet</a>' +
+		// TODO This needs to be consistent across the remark and the tweet template before we can use it.
+    //' <a class="retweet" target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">Retweet</a>' +
     // TODO This needs a visual confirmation before we can unhide it.
-		' <a class="retweet hide_this" title="Retweet Me" onClick="retweetMe(${tweetid})">Retweet</a>' +
+		//' <a class="retweet hide_this" title="Retweet Me" onClick="retweetMe(${tweetid})">Retweet</a>' +
     ' </td>' +
     '</tr>'
 );
@@ -609,23 +610,23 @@ var NurphSocket = {
             if(remark.nurphId && NurphSocket.sentMessages[remark.nurphId]) {
                 return;
             }
-            
+
             if(eventType === 'remark'){
                 NurphSocket.matchRemarksAndTweets(remark,null);
-                
+
             }
 
             if (remark.source && remark.source.indexOf('Nurph') >= 0) {
                 NurphSocket.matchRemarksAndTweets(null,remark);
                 return;
-                
+
                 /*
                 this is for direct publishing of tweets
                 //make tweets look diffrent so you can tell they came from nurph
                 remark.type = 'remark';
                 remark.sender = {display_name:remark.ScreenName,avatar_url:remark.profile_pic}
                 remark.content = remark.text;
-                
+
                 //we want to show your old tweets but we already inserted your tweets dirrectly into
                 //the DOM so we don't want to show them when we get them back from twitter
                 //as well
@@ -642,7 +643,7 @@ var NurphSocket = {
                 var take = true;
                 if (remark.created_at) {
                     remark.createdTime = new Date(remark.created_at);
-                    ake = (new Date()).getTime() - remark.createdTime.getTime() < 10 * 60 * 1000;
+                    take = (new Date()).getTime() - remark.createdTime.getTime() < 10 * 60 * 1000;
                 }
 
                 if (take) {
