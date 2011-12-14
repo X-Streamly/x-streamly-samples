@@ -604,10 +604,6 @@ var NurphSocket = {
                 return;
             }
 
-            if(eventType==remark){
-                return;
-            }
-
             if (remark.source && remark.source.indexOf('Nurph') >= 0) {
                 return;
                 
