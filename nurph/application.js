@@ -148,6 +148,12 @@ jQuery(function() {
             return false;
         }
 
+				// TODO
+				// If jQuery("#message_in_reply_to_id").val() is blank and the message.content
+				// beings with an @reply, find the last tweet from the @recipient in the
+				// timeline (if one exists) by searching for their username, and assign the
+				// tweetID from that as the jQuery("#message_in_reply_to_id").val()
+
         var message = $form.data("new-message").message;
         message.content = messageInput.val();
         message.type = "remark";
