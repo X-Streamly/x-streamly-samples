@@ -661,7 +661,9 @@ var NurphSocket = {
     },
     matchRemarksAndTweets: function(remark,tweet){
         if(remark){
-            remark.display = 'none';
+            //this line hides the RT and reply buttons untill the tweets
+            //arives
+            //remark.display = 'none';
             $.each(NurphSocket.tweets,function(key,twt){
                 if(twt.screenname === remark.sender.display_name
                     && twt.text.indexOf(remark.content)===0){
