@@ -460,7 +460,7 @@ var remark_template = jQuery.template(
     ' </td>' +
     ' <td class="options">' +
     // TODO This needs tweetID instead of the this.id.
-    ' <a class="reply" href="#" title="${display_name}" style="display:${display};" onClick="in_reply_to(${id}, this.title)">Reply</a>' +
+    ' <a class="reply" href="#" title="${display_name}" style="display:${display};" onClick="in_reply_to(\'${id}\', this.title)">Reply</a>' +
     // TODO This also needs a tweetID
     ' <a class="rt" href="#" title="${id}" style="display:${display};" onClick="manualRetweet(this.title)">RT</a>' +
     // TODO This also needs a tweetID before it will work
