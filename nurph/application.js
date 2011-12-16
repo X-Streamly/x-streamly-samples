@@ -138,7 +138,7 @@ jQuery(function() {
 
         //limit the total tweet length to 140
         if(countChar({value:messageInput.val()})<0){
-            alert('Sorry, your message it to long, plese use less vowels and try again');
+            alert('Your message needs to be 140 chars or less.');
             return false;
         }
 
@@ -320,7 +320,7 @@ Message.prototype.parse = function() {
             this.display_name = this.sender.display_name;
             this.avatar = this.sender.avatar_url;
             if(!this.id){
-                //if we haven't found the tweet for this remark yet then use the nurp id
+                //if we haven't found the tweet for this remark yet then use the nurph id
                 this.id = this.nurphId;
             }
             break;
