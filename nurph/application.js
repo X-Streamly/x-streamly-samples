@@ -129,6 +129,15 @@ jQuery(function() {
 
     // Message form
     $("#new_message").submit(function(event) {
+
+				if ($("#message_in_reply_to_id").val() == '' && $("#message_content").val().charAt(0) == '@') {
+					recipient = $("#message_content").val().match(/(\w+)/)[0];
+					var repliedTo = $('.sender_'+recipient);
+					if (repliedTo.attr('id') != undefined) {
+						$("#message_in_reply_to_id").val(repliedTo.attr('id').match(/tweet_(\w+)/)[1])
+					}
+				};
+
         var form = this,
             $form = $(form);
         		url = $form.attr("action"),
@@ -147,12 +156,6 @@ jQuery(function() {
             messageInput.val("");
             return false;
         }
-
-				// TODO
-				// If jQuery("#message_in_reply_to_id").val() is blank and the message.content
-				// beings with an @reply, find the last tweet from the @recipient in the
-				// timeline (if one exists) by searching for their username, and assign the
-				// tweetID from that as the jQuery("#message_in_reply_to_id").val()
 
         var message = $form.data("new-message").message;
         message.content = messageInput.val();
@@ -414,7 +417,7 @@ var user_template = jQuery.template(
 );
 
 var tweet_template = jQuery.template(
-    '<tr id="tweet_${tweetid}" class="message-record tweet ${classNames} remark">' +
+    '<tr id="tweet_${tweetid}" class="message-record tweet ${classNames} remark sender_${display_name}">' +
     ' <td class="time">' +
     ' <a target="_blank" href="http://twitter.com/${display_name}/status/${tweetid}">${time}</a>' +
     ' </td>' +
@@ -448,7 +451,7 @@ var event_template = jQuery.template(
 );
 
 var remark_template = jQuery.template(
-    '<tr id="message_${id}" class="message-record ${classNames} remark">' +
+    '<tr id="message_${id}" class="message-record ${classNames} remark sender_${display_name}">' +
     ' <td class="time">' +
     ' ${time}' +
     ' </td>' +
