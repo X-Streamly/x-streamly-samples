@@ -556,13 +556,13 @@ var NurphSocket = {
                 initialMessages.sort(function(a, b) {
                     return a.createdTime.getTime() - b.createdTime.getTime();
                 });
-                
+
                 var messageToTake = 20;
-                
+
                 if(initialMessages.length>messageToTake){
                     initialMessages = initialMessages.slice(initialMessages.length-messageToTake);
                 }
-                
+
                 insert_messages(initialMessages);
 
 
