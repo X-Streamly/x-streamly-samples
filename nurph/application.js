@@ -556,9 +556,17 @@ var NurphSocket = {
                 initialMessages.sort(function(a, b) {
                     return a.createdTime.getTime() - b.createdTime.getTime();
                 });
-
+                
+                var messageToTake = 20;
+                
+                if(initialMessages.length>messageToTake){
+                    initialMessages = initialMessages.slice(initialMessages.length-messageToTake);
+                }
+                
                 insert_messages(initialMessages);
-                initialMessages= [];
+
+
+                                initialMessages= [];
                 NurphSocket.addNurphBot();
                 XStreamly.log('took '+((new Date()).getTime()-startingConnectTime)+ 'ms to load messages');
             }
@@ -652,7 +660,8 @@ var NurphSocket = {
                 var take = true;
                 if (remark.created_at) {
                     remark.createdTime = new Date(remark.created_at);
-                    take = (new Date()).getTime() - remark.createdTime.getTime() < 10 * 60 * 1000;
+                    var oneWeek = 1000 * 60 * 60 * 24 * 7;
+                    take = (new Date()).getTime() - remark.createdTime.getTime() < oneWeek;
                 }
 
                 if (take) {
