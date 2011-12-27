@@ -542,6 +542,7 @@ var NurphSocket = {
         var loaded = false;
         var initialMessages = [];
         this.xstreamly = new XStreamly('1183738a-fa9b-4f83-8594-407fa27c2e7b', '2176a6e7-cfe6-4e63-bee5-41d30739c438');
+        this.xstreamly.addSecurityToken('44d3f3d4-2fed-42c4-a583-0a5ec417c164');
         var startingConnectTime = (new Date()).getTime();
         this.channel = this.xstreamly.subscribe((currentEnvironment + '-' + channelName), {
             userId: currentUserName,
