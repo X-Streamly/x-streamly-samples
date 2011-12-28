@@ -133,7 +133,7 @@ jQuery(function() {
 				if ($("#message_in_reply_to_id").val() == '' && $("#message_content").val().charAt(0) == '@') {
 					recipient = $("#message_content").val().match(/(\w+)/)[0];
 					var repliedTo = $('.sender_'+recipient);
-					if (repliedTo.attr('id') != undefined) {
+					if (repliedTo.attr('id') != undefined && repliedTo.attr('id').charAt(0) != "m") {
 						$("#message_in_reply_to_id").val(repliedTo.attr('id').match(/tweet_(\w+)/)[1])
 					}
 				};
@@ -401,6 +401,9 @@ Message.prototype.append = function() {
         try {
             if (this.type === "remark" && playSound) {
                 soundManager.play("click");
+								if (this.sender.display_name == "Nurph") {
+        					$('.sender_Nurph_remark_content').jSpeaker();
+								}
             }
         } catch (e) {
             log("There was an error playing the sound effects.");
@@ -411,7 +414,7 @@ Message.prototype.append = function() {
 // Templates for messages
 var user_template = jQuery.template(
     '<li class="${participation} participant ${display_name}">' +
-    '<img style="width:20px; height:20px" src="${avatar_url}" /> ' +
+    '<img style="width:24px; height:24px" src="${avatar_url}" /> ' +
     '<a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>' +
     '</li>'
 );
@@ -458,7 +461,7 @@ var remark_template = jQuery.template(
     ' <td class="avatar"><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}"><img width="22px" height="22px" src="${avatar}" /></a></td>' +
     ' <td class="message">' +
     ' <div class="readable">' +
-    ' <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: ${content}</p>' +
+    ' <p><a class="brash twitter-anywhere-user" target="_blank" href="http://twitter.com/${display_name}">${display_name}</a>: <span class="sender_${display_name}_remark_content">${content}</p>' +
     ' </div>' +
     ' </td>' +
     ' <td class="options">' +
@@ -541,7 +544,7 @@ var NurphSocket = {
 
         var loaded = false;
         var initialMessages = [];
-        this.xstreamly = new XStreamly('1183738a-fa9b-4f83-8594-407fa27c2e7b', '2176a6e7-cfe6-4e63-bee5-41d30739c438');
+        this.xstreamly = new XStreamly('1183738a-fa9b-4f83-8594-407fa27c2e7b', xStreamlyToken);
         this.xstreamly.addSecurityToken('44d3f3d4-2fed-42c4-a583-0a5ec417c164');
         var startingConnectTime = (new Date()).getTime();
         this.channel = this.xstreamly.subscribe((currentEnvironment + '-' + channelName), {
@@ -717,11 +720,11 @@ var NurphSocket = {
         var data;
 
         if (name) {
-            data = '<a href="http://twitter.com/' + name + '" title="' + name + '"><img alt="' + name + '" height="20" src="' + pic + '" width="20" /></a>' +
+            data = '<a href="http://twitter.com/' + name + '" title="' + name + '"><img alt="' + name + '" height="24" src="' + pic + '" width="24" /></a>' +
             '<a href="http://twitter.com/' + name + '" class="brash twitter-anywhere-user">' + name + '</a>';
         }
         else {
-            data = '<img alt="Anonymous" height="20" src="/images/anonymous_20px.png" width="20" />' +
+            data = '<img alt="Anonymous" height="24" src="/images/anonymous_20px.png" width="24" />' +
             '<span class="anonymous">Anonymous</span>';
         }
 
@@ -735,12 +738,16 @@ var NurphSocket = {
     participantModified: function(participant) {
         var name = participant.memberInfo.name;
         var pic = participant.memberInfo.profilePic;
-        $('#participant-' + participant.id).html('<a href="http://twitter.com/' + name + '" title="' + name + '"><img alt="' + name + '" height="20" src="' + pic + '" width="20" /></a>' +
+        $('#participant-' + participant.id).html('<a href="http://twitter.com/' + name + '" title="' + name + '"><img alt="' + name + '" height="24" src="' + pic + '" width="24" /></a>' +
             '<a href="http://twitter.com/' + name + '" class="brash">' + name + '</a>');
     },
     removeParticipant: function(participant) {
         delete NurphSocket.knownMembers[name];
-        $("#participant-" + participant.id).remove();
+				if (NurphSocket.channelName == "Nurph" && participant.memberInfo.name == "Nurph") {
+					''
+				} else {
+					$("#participant-" + participant.id).remove();
+				}
         NurphSocket.updateParticipantCounter();
         if (NurphSocket.isAuthoritiveClient() && participant.memberInfo.name !== currentUserName) {
             //only send notifications for users that are logged in
@@ -758,7 +765,12 @@ var NurphSocket = {
     },
 		updateParticipantCounter: function() {
 		  if (NurphSocket.channelName == "Nurph") {
-		    $('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count + 1);
+				$('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count + 1);
+			  NurphSocket.channel.presenceChannel.members.each(function(member) {
+					if (member.id == "Nurph") {
+						$('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
+					}
+				})
 		  } else {
 		    $('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
 		  }
@@ -767,7 +779,7 @@ var NurphSocket = {
 		  // TODO: @Nurph's presence in #Nurph is hard coded but really needs to
 		  // be handled by a live connection.
 		  if (NurphSocket.channelName == "Nurph" && $('#participant-Nurph').length === 0) {
-		    $('#channel_contributors').append($('<li class="participant" id="participant-Nurph"><a title="Nurph" href="http://twitter.com/Nurph"><img width="20" height="20" src="http://a1.twimg.com/profile_images/1450887565/AZO_glow_normal.png" alt="Nurph"></a><a class="brash twitter-anywhere-user" href="http://twitter.com/Nurph">Nurph</a></li>'));
+		    $('#channel_contributors').append($('<li class="participant" id="participant-Nurph"><a title="Nurph" href="http://twitter.com/Nurph"><img width="24" height="24" src="http://a1.twimg.com/profile_images/1450887565/AZO_glow_normal.png" alt="Nurph"></a><a class="brash twitter-anywhere-user" href="http://twitter.com/Nurph">Nurph</a></li>'));
 		  }
 		},
     //we want to only publish shared events (like out side tweets and enter exit messgages)
@@ -919,3 +931,10 @@ function update_document_title_if_idle() {
         return (this.attr("scrollTop") + this.attr("offsetHeight") + threshold) >= this.attr("scrollHeight");
     };
 })(jQuery);
+
+// jSpeaker Test Method
+$(document).ready(function() {
+	$('a#jspeaker_test_link').click(function() {
+		$('#jspeaker_test_content').jSpeaker();
+	});
+});
