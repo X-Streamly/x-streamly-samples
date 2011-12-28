@@ -564,13 +564,19 @@ var NurphSocket = {
                 var messageToTake = 20;
 
                 if(initialMessages.length>messageToTake){
+                    var messageToDelete = initialMessages.slice(0,initialMessages.length-messageToTake-1);
+                    
+                    $.each(messageToDelete,function(key,item){
+                         NurphSocket.channel.removePersistedMessage(item.xstreamlyKey);
+                    });
+                    
                     initialMessages = initialMessages.slice(initialMessages.length-messageToTake);
                 }
 
                 insert_messages(initialMessages);
 
 
-                                initialMessages= [];
+                initialMessages= [];
                 NurphSocket.addNurphBot();
                 XStreamly.log('took '+((new Date()).getTime()-startingConnectTime)+ 'ms to load messages');
             }
@@ -629,6 +635,7 @@ var NurphSocket = {
             }
 
             if(remark.nurphId && NurphSocket.sentMessages[remark.nurphId]) {
+                XStreamly.log('skipping message because we sent the message');
                 return;
             }
 
@@ -639,6 +646,9 @@ var NurphSocket = {
 
             if (remark.source && remark.source.indexOf('Nurph') >= 0) {
                 NurphSocket.matchRemarksAndTweets(null,remark);
+                if(loaded){
+                    XStreamly.log('skipping tweet becasue it came from nurph');
+                }
                 return;
 
                 /*
@@ -655,6 +665,11 @@ var NurphSocket = {
                     return;
                 }*/
             }
+            else{
+                if(loaded){
+                    XStreamly.log('tweet source '+remark.source);
+                }
+            }
 
             //we want to save all the inital messages
             //so they can be layed out correctly.
@@ -669,7 +684,10 @@ var NurphSocket = {
                 }
 
                 if (take) {
+                    remark.xstreamlyKey = key;
                     initialMessages.push(remark);
+                } else {
+                    NurphSocket.channel.removePersistedMessage(key);
                 }
             }
         });
