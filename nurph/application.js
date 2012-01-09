@@ -409,6 +409,10 @@ Message.prototype.append = function() {
             log("There was an error playing the sound effects.");
         }
     }
+
+		// TODO: Speed up how quickly the emoticons are rendered.
+		$('.readable p span:last').emoticonize();
+
 };
 
 // Templates for messages
@@ -565,11 +569,11 @@ var NurphSocket = {
 
                 if(initialMessages.length>messageToTake){
                     var messageToDelete = initialMessages.slice(0,initialMessages.length-messageToTake-1);
-                    
+
                     $.each(messageToDelete,function(key,item){
                          NurphSocket.channel.removePersistedMessage(item.xstreamlyKey);
                     });
-                    
+
                     initialMessages = initialMessages.slice(initialMessages.length-messageToTake);
                 }
 
@@ -950,8 +954,8 @@ function update_document_title_if_idle() {
     };
 })(jQuery);
 
-// jSpeaker Test Method
 $(document).ready(function() {
+	// jSpeaker Test Method
 	$('a#jspeaker_test_link').click(function() {
 		$('#jspeaker_test_content').jSpeaker();
 	});
