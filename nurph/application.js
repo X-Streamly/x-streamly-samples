@@ -623,7 +623,7 @@ var NurphSocket = {
                 remark.type = 'tweet';
 				if(remark.text && remark.text.toLowerCase().indexOf(channelName.toLowerCase())===-1) {
 				  // tweet doesn't belong to this channel
-				  XStreamly.log('skipping tweet that does not belong in channel');
+				  XStreamly.log('skipping tweet that does not belong in channel: '+remark.text);
 				  return;
 				}
             }
@@ -669,12 +669,7 @@ var NurphSocket = {
                     return;
                 }*/
             }
-            else{
-                if(loaded){
-                    XStreamly.log('tweet source '+remark.source);
-                }
-            }
-
+            
             //we want to save all the inital messages
             //so they can be layed out correctly.
             if (loaded) {
