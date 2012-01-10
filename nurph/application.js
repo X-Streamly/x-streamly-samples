@@ -701,6 +701,7 @@ var NurphSocket = {
                 if(twt.screenname === remark.sender.display_name
                     && twt.text.indexOf(remark.content)===0){
                         NurphSocket.updateRemarkRowWithTweet(remark,twt);
+                        NurphSocket.tweets.splice(key,1);
                         return;
                     }
             });
@@ -710,6 +711,7 @@ var NurphSocket = {
                 if(tweet.screenname === rmk.sender.display_name
                     && tweet.text.indexOf(rmk.content)===0){
                         NurphSocket.updateRemarkRowWithTweet(rmk,tweet);
+                        NurphSocket.remarksWaitingForTweets.splice(key,1);
                         return;
                     }
             });
