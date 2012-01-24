@@ -669,7 +669,7 @@ var NurphSocket = {
                     return;
                 }*/
             }
-            
+
             //we want to save all the inital messages
             //so they can be layed out correctly.
             if (loaded) {
@@ -762,7 +762,7 @@ var NurphSocket = {
     },
     removeParticipant: function(participant) {
         delete NurphSocket.knownMembers[name];
-				if (NurphSocket.channelName == "Nurph" && participant.memberInfo.name == "Nurph") {
+				if (participant.memberInfo.name == "Nurph") {
 					''
 				} else {
 					$("#participant-" + participant.id).remove();
@@ -783,21 +783,17 @@ var NurphSocket = {
         }
     },
 		updateParticipantCounter: function() {
-		  if (NurphSocket.channelName == "Nurph") {
-				$('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count + 1);
-			  NurphSocket.channel.presenceChannel.members.each(function(member) {
-					if (member.id == "Nurph") {
-						$('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
-					}
-				})
-		  } else {
-		    $('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
-		  }
+			$('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count + 1);
+		  NurphSocket.channel.presenceChannel.members.each(function(member) {
+				if (member.id == "Nurph") {
+					$('#currently-online-count').text(NurphSocket.channel.presenceChannel.members.count);
+				}
+			})
 		},
 		addNurphBot: function() {
 		  // TODO: @Nurph's presence in #Nurph is hard coded but really needs to
 		  // be handled by a live connection.
-		  if (NurphSocket.channelName == "Nurph" && $('#participant-Nurph').length === 0) {
+		  if ($('#participant-Nurph').length === 0) {
 		    $('#channel_contributors').append($('<li class="participant" id="participant-Nurph"><a title="Nurph" href="http://twitter.com/Nurph"><img width="24" height="24" src="http://a1.twimg.com/profile_images/1450887565/AZO_glow_normal.png" alt="Nurph"></a><a class="brash twitter-anywhere-user" href="http://twitter.com/Nurph">Nurph</a></li>'));
 		  }
 		},
@@ -888,7 +884,7 @@ var resizeChatLayout = function() {
     if (chat) chat.scrollTop = chat.scrollHeight;
 
     jQuery("body:not(.iphone) #front").css("height", jQuery("#content").height());
-    jQuery("body:not(.iphone) #channel_contributors").css("height", jQuery("#content").height() - 177);
+    jQuery("body:not(.iphone) #channel_contributors").css("height", jQuery("#content").height() - 187);
 };
 
 var resizeParticipants = function() {
